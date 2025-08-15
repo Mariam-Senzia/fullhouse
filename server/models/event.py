@@ -17,3 +17,5 @@ class Event(db.Model):
     capacity = db.Colmn(db.Integer)
     ticket_price = db.Colmn(db.Numeric(10,2))
     created_at = db.Column(db.Time)
+
+    all_events = db.relationship('Booking', backref="events")

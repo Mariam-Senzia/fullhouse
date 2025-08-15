@@ -13,4 +13,7 @@ class Booking(db.Model):
     created_at = db.Column(db.Time)	
     guest_name = db.Column(db.String)		
     guest_email = db.Column(db.Text)	
-    guest_phone	= db.Column(db.String)		
+    guest_phone	= db.Column(db.String)	
+
+    all_bookings = db.relationship('Payment', backref='bookings')	
+    all_checkings = db.relationship('Checking', backref='bookings')

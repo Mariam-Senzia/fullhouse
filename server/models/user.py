@@ -11,3 +11,6 @@ class User(db.Model):
     password = db.Column(db.Text)
     phone_number = db.Column(db.String)		
     role = db.Column(db.String)
+
+    all_events = db.relationship('Event', backref='user')
+    all_bookings = db.relationship('Booking',backref='user')

@@ -8,6 +8,7 @@ from models.payment import Payment
 from models.checkin import Checkin
 from flask_restful import Api, Resource
 from datetime import datetime
+import re
 
 
 app =  Flask(__name__)
@@ -25,12 +26,24 @@ class EventResource(Resource):
         try :
             formData = request.get_json()
 
+            date_str = formData.get("date")
+            date_obj = datetime.strptime(
+            re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', date_str),
+            "%d %b %Y"
+            ).date()
+
+            start_time_str = formData.get("start_time") 
+            start_time_obj = datetime.strptime(start_time_str, "%I:%M %p").time()
+
+            end_time_str = formData.get("end_time")
+            end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
+
             title=formData.get("title")
             description=formData.get("description")
             category=formData.get("category")
-            date=formData.get("date")
-            start_time=formData.get("start_time")
-            end_time=formData.get("end_time")
+            date=date_obj
+            start_time=start_time_obj
+            end_time=end_time_obj
             location=formData.get("location")
             capacity=formData.get("capacity")
             ticket_price=formData.get("ticket_price")
@@ -52,7 +65,7 @@ class EventResource(Resource):
             db.session.add(newEvent)
             db.session.commit()
 
-            return make_response(jsonify({"message": f'Event created successfully, {newEvent}'}), 200)
+            return make_response(jsonify({"message": "Event created successfully"}), 200)
 
         except Exception as e:
             print(e)
@@ -88,12 +101,25 @@ class EventResource(Resource):
             event = Event.query.get(id)
 
             formData = request.get_json()
+
+            date_str = formData.get("date")
+            date_obj = datetime.strptime(
+            re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', date_str),
+            "%d %b %Y"
+            ).date()
+
+            start_time_str = formData.get("start_time") 
+            start_time_obj = datetime.strptime(start_time_str, "%I:%M %p").time()
+
+            end_time_str = formData.get("end_time")
+            end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
+
             title=formData.get("title")
             description=formData.get("description")
             category=formData.get("category")
-            date=formData.get("date")
-            start_time=formData.get("start_time")
-            end_time=formData.get("end_time")
+            date=date_obj
+            start_time=start_time_obj
+            end_time=end_time_obj
             location=formData.get("location")
             capacity=formData.get("capacity")
             ticket_price=formData.get("ticket_price")
@@ -112,7 +138,7 @@ class EventResource(Resource):
 
             db.session.commit()
 
-            return jsonify({"message": f'Event updated successfully, {event}'})
+            return jsonify({"message": "Event updated successfully"})
 
         except Exception as e:
             print(e)

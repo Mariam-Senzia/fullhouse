@@ -14,4 +14,4 @@ class Booking(db.Model):
     guest_phone	= db.Column(db.String)	
 
     all_bookings = db.relationship('Payment', backref='bookings')	
-    all_checkings = db.relationship('Checking', backref='bookings')
+    all_checkings = db.relationship('Checkin', backref='bookings')

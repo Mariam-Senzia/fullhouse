@@ -38,28 +38,17 @@ class EventResource(Resource):
             end_time_str = formData.get("end_time")
             end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
 
-            title=formData.get("title")
-            description=formData.get("description")
-            category=formData.get("category")
-            date=date_obj
-            start_time=start_time_obj
-            end_time=end_time_obj
-            location=formData.get("location")
-            capacity=formData.get("capacity")
-            ticket_price=formData.get("ticket_price")
-            created_at=formData.get("created_at")
-
             newEvent = Event(
-            title = title,
-            description = description,
-            category = category,
-            date = date,
-            start_time = start_time,
-            end_time = end_time,
-            location = location,
-            capacity = capacity,
-            ticket_price = ticket_price,
-            created_at = created_at
+                title = formData.get("title"),
+                description = formData.get("description"),
+                category = formData.get("category"),
+                date = date_obj,
+                start_time = start_time_obj,
+                end_time = end_time_obj,
+                location = formData.get("location"),
+                capacity = formData.get("capacity"),
+                ticket_price = formData.get("ticket_price"),
+                created_at = formData.get("created_at")
             )
             
             db.session.add(newEvent)
@@ -82,13 +71,13 @@ class EventResource(Resource):
                     "title": item.title, 
                     "description": item.description, 
                     "category": item.category, 
-                    "date": item.date,
-                    "start_time": item.start_time, 
-                    "end_time": item.end_time, 
+                    "date": item.date.strftime("%d %b %Y") if item.date else None, 
+                    "start_time": item.start_time.strftime("%I:%M %p") if item.start_time else None, 
+                    "end_time": item.end_time.strftime("%I:%M %p") if item.end_time else None, 
                     "location": item.location, 
                     "capacity": item.capacity, 
                     "ticket_price": str(item.ticket_price), 
-                    "created_at": item.created_at
+                    "created_at": item.created_at.strftime("%d %b %Y %I:%M %p") if item.created_at else None
                     } for item in events]
                 )
 
@@ -98,7 +87,7 @@ class EventResource(Resource):
         
     def put(self, id):
         try:
-            event = Event.query.get(id)
+            event = db.session.query(Event, id)
 
             formData = request.get_json()
 
@@ -114,35 +103,38 @@ class EventResource(Resource):
             end_time_str = formData.get("end_time")
             end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
 
-            title=formData.get("title")
-            description=formData.get("description")
-            category=formData.get("category")
-            date=date_obj
-            start_time=start_time_obj
-            end_time=end_time_obj
-            location=formData.get("location")
-            capacity=formData.get("capacity")
-            ticket_price=formData.get("ticket_price")
-            created_at=formData.get("created_at")
-
-            event.title = title
-            event.description = description
-            event.category = category
-            event.date = date
-            event.start_time = start_time
-            event.end_time = end_time
-            event.location = location
-            event.capacity = capacity
-            event.ticket_price = ticket_price
-            event.created_at = created_at
+            event.title = formData.get("title")
+            event.description = formData.get("description")
+            event.category = formData.get("category")
+            event.date = date_obj
+            event.start_time = start_time_obj
+            event.end_time = end_time_obj
+            event.location = formData.get("location")
+            event.capacity = formData.get("capacity")
+            event.ticket_price = formData.get("ticket_price")
+            event.created_at = formData.get("created_at")
 
             db.session.commit()
 
-            return jsonify({"message": "Event updated successfully"})
+            return make_response(jsonify({"message": "Event updated successfully"}), 200)
 
         except Exception as e:
             print(e)
-            return jsonify({"message": "Error updating event"})
+            return make_response(jsonify({"message": "Error updating event"}), 404)
+
+    def delete(self, id):
+        try:
+            event = db.session.get(Event, id)
+
+            if event:
+                db.session.delete(event)
+                db.session.commit()
+
+            return make_response(jsonify({"message": "Event deleted successfully"}), 200)
+
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error updating event"}), 404)
 
 api.add_resource(EventResource,'/events', '/event/<int:id>')
 

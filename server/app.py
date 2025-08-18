@@ -184,8 +184,28 @@ class BookingResource(Resource):
         except Exception as e:
             print(e)
             return make_response(jsonify({"message": "Error creating booking"}))
-    
-api.add_resource(BookingResource, "/bookings")
+        
+    def get(self, id):
+        try: 
+            bookings = Booking.query.filter_by(user_id = id).all()
+
+            if bookings:
+                return make_response(jsonify([{
+                    "event_id": item.event_id,
+                    "user_id": item.user_id,
+                    "quantity": item.quantity,
+                    "total_ticket_price": item.total_ticket_price,
+                    "created_at": item.created_at,
+                    "guest_name": item.guest_name,
+                    "guest_email": item.guest_email,
+                    "guest_phone": item.guest_phone
+                } for item in bookings]), 200)
+            
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error getting booking"}))
+
+api.add_resource(BookingResource, "/bookings", "/booking/<int:id>")
 
 
 if __name__ == "__main__":

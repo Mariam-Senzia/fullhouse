@@ -161,6 +161,32 @@ class EventResource(Resource):
 
 api.add_resource(EventResource,'/events', '/event/<int:id>')
 
+class BookingResource(Resource):
+    def post(self):
+        try:
+            formData = request.get_json()
+
+            newBooking = Booking(
+                event_id = formData.get("event_id"),
+                user_id = formData.get("user_id"),
+                quantity = formData.get("quantity"),
+                total_ticket_price = formData.get("total_ticket_price"),
+                created_at = formData.get("ticket_price"),
+                guest_name = formData.get("guest_name"),
+                guest_email = formData.get("guest_email"),
+                guest_phone = formData.get("guest_phone")
+            )
+            db.session.add(newBooking)
+            db.session.commit()
+
+            return make_response(jsonify({"message": "Event booked successfully"}))
+
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error creating booking"}))
+    
+api.add_resource(BookingResource, "/bookings")
+
 
 if __name__ == "__main__":
     app.run(debug=True)

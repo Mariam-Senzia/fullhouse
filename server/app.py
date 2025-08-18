@@ -60,30 +60,53 @@ class EventResource(Resource):
             print(e)
             return make_response(jsonify({"message": "Failed to create event"}), 404)
         
-    def get(self):
+    def get(self, id=None):
         try:
-            events = Event.query.all()
+            if id:
+                event = db.session.get(Event, id)
 
-            return jsonify(
-                [{
-                    "id": item.id,
-                    "organizer_id": item.organizer_id, 
-                    "title": item.title, 
-                    "description": item.description, 
-                    "category": item.category, 
-                    "date": item.date.strftime("%d %b %Y") if item.date else None, 
-                    "start_time": item.start_time.strftime("%I:%M %p") if item.start_time else None, 
-                    "end_time": item.end_time.strftime("%I:%M %p") if item.end_time else None, 
-                    "location": item.location, 
-                    "capacity": item.capacity, 
-                    "ticket_price": str(item.ticket_price), 
-                    "created_at": item.created_at.strftime("%d %b %Y %I:%M %p") if item.created_at else None
-                    } for item in events]
-                )
+                return make_response(jsonify(
+                    {
+                        "id": event.id,
+                        "organizer_id": event.organizer_id, 
+                        "title": event.title, 
+                        "description": event.description, 
+                        "category": event.category, 
+                        "date": event.date.strftime("%d %b %Y") if event.date else None, 
+                        "start_time": event.start_time.strftime("%I:%M %p") if event.start_time else None, 
+                        "end_time": event.end_time.strftime("%I:%M %p") if event.end_time else None, 
+                        "location": event.location, 
+                        "capacity": event.capacity, 
+                        "ticket_price": str(event.ticket_price), 
+                        "created_at": event.created_at.strftime("%d %b %Y %I:%M %p") if event.created_at else None
+                    }
+                    ), 200)
+            else:
+                events = Event.query.all()
+
+                return jsonify(
+                    [{
+                        "id": item.id,
+                        "organizer_id": item.organizer_id, 
+                        "title": item.title, 
+                        "description": item.description, 
+                        "category": item.category, 
+                        "date": item.date.strftime("%d %b %Y") if item.date else None, 
+                        "start_time": item.start_time.strftime("%I:%M %p") if item.start_time else None, 
+                        "end_time": item.end_time.strftime("%I:%M %p") if item.end_time else None, 
+                        "location": item.location, 
+                        "capacity": item.capacity, 
+                        "ticket_price": str(item.ticket_price), 
+                        "created_at": item.created_at.strftime("%d %b %Y %I:%M %p") if item.created_at else None
+                        } for item in events]
+                    )
 
         except Exception as e:
             print(e)
-            return make_response(jsonify({"message": "Failed to get events"}), 404)
+            if id:
+                make_response(jsonify({"message": "Error getting event"}), 404)
+            else:
+                make_response(jsonify({"message": "Failed to get events"}), 404)
         
     def put(self, id):
         try:

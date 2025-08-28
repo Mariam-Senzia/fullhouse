@@ -9,7 +9,7 @@ from models.checkin import Checkin
 from flask_restful import Api, Resource
 from datetime import datetime
 import re
-
+from flask_bcrypt import Bcrypt
 
 app =  Flask(__name__)
 
@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
-
+bcrypt = Bcrypt(app)
 
 class EventResource(Resource):
     def post(self):
@@ -207,6 +207,30 @@ class BookingResource(Resource):
 
 api.add_resource(BookingResource, "/bookings", "/booking/<int:id>")
 
+class AuthenticationResource(Resource):
+    def post(self):
+        try:
+            formData = request.get_json()
+
+            password = formData.get("password")
+            hashed_password = bcrypt.generate_password_hash(password).decode(utf-8)
+
+            newUser = User(
+                name = formData.get("name"),
+                email = formData.get("email"),
+                password = hashed_password,
+                phone_number = formData.get("phone_number")
+            )
+            db.session.add(newUser)
+            db.session.commit()
+
+            return make_response(jsonify({"message": "User created successfully"}))
+
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error creating user"}))
+
+api.add_resource(AuthenticationResource, "/register")
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -10,7 +10,7 @@ from flask_restful import Api, Resource
 from datetime import datetime
 import re
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 import os
 from dotenv import load_dotenv
 
@@ -273,8 +273,8 @@ class LoginResource(Resource):
             user = User.query.filter_by(email = email).first()
 
             if user and (bcrypt.check_password_hash(user.password, password)):
-                access_token = create_access_token(identity={"email":user.email})
-                refresh_token = create_refresh_token(identity={"email":user.email})
+                access_token = create_access_token(identity=user.email)
+                refresh_token = create_refresh_token(identity=user.email)
 
                 response = make_response(jsonify({
                     'access_token': access_token,
@@ -291,6 +291,24 @@ class LoginResource(Resource):
             return make_response(jsonify({"message": "Invalid email or password"}))
         
 api.add_resource(LoginResource, "/login")
+
+class RefreshToken(Resource):
+    """API resource for refreshing tokens."""
+    
+    @jwt_required(refresh=True)
+    def post(self):
+        """Handle POST requests for refreshing tokens."""
+        try: 
+            current_user = get_jwt_identity()
+            new_access_token = create_access_token(identity=current_user)
+
+            return make_response(jsonify({"access_token": new_access_token}))
+        
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error generating tokens"}))
+
+api.add_resource(RefreshToken, "/refresh")
 
 if __name__ == "__main__":
     app.run(debug=True)

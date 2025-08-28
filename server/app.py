@@ -10,48 +10,59 @@ from flask_restful import Api, Resource
 from datetime import datetime
 import re
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app =  Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
 
 db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
 bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
 class EventResource(Resource):
-    def post(self):
-        try :
-            formData = request.get_json()
+    """API resource for handling event-related operations."""
 
-            date_str = formData.get("date")
+    def post(self):
+        """Handle POST requests for creating a new event."""
+
+        try :
+            form_data = request.get_json()
+
+            date_str = form_data.get("date")
             date_obj = datetime.strptime(
             re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', date_str),
             "%d %b %Y"
             ).date()
 
-            start_time_str = formData.get("start_time") 
+            start_time_str = form_data.get("start_time") 
             start_time_obj = datetime.strptime(start_time_str, "%I:%M %p").time()
 
-            end_time_str = formData.get("end_time")
+            end_time_str = form_data.get("end_time")
             end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
 
-            newEvent = Event(
-                title = formData.get("title"),
-                description = formData.get("description"),
-                category = formData.get("category"),
+            new_event = Event(
+                title = form_data.get("title"),
+                description = form_data.get("description"),
+                category = form_data.get("category"),
                 date = date_obj,
                 start_time = start_time_obj,
                 end_time = end_time_obj,
-                location = formData.get("location"),
-                capacity = formData.get("capacity"),
-                ticket_price = formData.get("ticket_price"),
-                created_at = formData.get("created_at")
+                location = form_data.get("location"),
+                capacity = form_data.get("capacity"),
+                ticket_price = form_data.get("ticket_price"),
+                created_at = form_data.get("created_at")
             )
             
-            db.session.add(newEvent)
+            db.session.add(new_event)
             db.session.commit()
 
             return make_response(jsonify({"message": "Event created successfully"}), 200)
@@ -61,6 +72,8 @@ class EventResource(Resource):
             return make_response(jsonify({"message": "Failed to create event"}), 404)
         
     def get(self, id=None):
+        """Handle GET requests for getting an event."""
+
         try:
             if id:
                 event = db.session.get(Event, id)
@@ -109,33 +122,35 @@ class EventResource(Resource):
                 make_response(jsonify({"message": "Failed to get events"}), 404)
         
     def put(self, id):
+        """Handle PUT requests for updating an event."""
+
         try:
             event = db.session.query(Event, id)
 
-            formData = request.get_json()
+            form_data = request.get_json()
 
-            date_str = formData.get("date")
+            date_str = form_data.get("date")
             date_obj = datetime.strptime(
             re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', date_str),
             "%d %b %Y"
             ).date()
 
-            start_time_str = formData.get("start_time") 
+            start_time_str = form_data.get("start_time") 
             start_time_obj = datetime.strptime(start_time_str, "%I:%M %p").time()
 
-            end_time_str = formData.get("end_time")
+            end_time_str = form_data.get("end_time")
             end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
 
-            event.title = formData.get("title")
-            event.description = formData.get("description")
-            event.category = formData.get("category")
+            event.title = form_data.get("title")
+            event.description = form_data.get("description")
+            event.category = form_data.get("category")
             event.date = date_obj
             event.start_time = start_time_obj
             event.end_time = end_time_obj
-            event.location = formData.get("location")
-            event.capacity = formData.get("capacity")
-            event.ticket_price = formData.get("ticket_price")
-            event.created_at = formData.get("created_at")
+            event.location = form_data.get("location")
+            event.capacity = form_data.get("capacity")
+            event.ticket_price = form_data.get("ticket_price")
+            event.created_at = form_data.get("created_at")
 
             db.session.commit()
 
@@ -146,6 +161,8 @@ class EventResource(Resource):
             return make_response(jsonify({"message": "Error updating event"}), 404)
 
     def delete(self, id):
+        """Handle DELETE requests for updating an event."""
+
         try:
             event = db.session.get(Event, id)
 
@@ -162,21 +179,25 @@ class EventResource(Resource):
 api.add_resource(EventResource,'/events', '/event/<int:id>')
 
 class BookingResource(Resource):
-    def post(self):
-        try:
-            formData = request.get_json()
+    """API resource for handling booking-related operations."""
 
-            newBooking = Booking(
-                event_id = formData.get("event_id"),
-                user_id = formData.get("user_id"),
-                quantity = formData.get("quantity"),
-                total_ticket_price = formData.get("total_ticket_price"),
-                created_at = formData.get("ticket_price"),
-                guest_name = formData.get("guest_name"),
-                guest_email = formData.get("guest_email"),
-                guest_phone = formData.get("guest_phone")
+    def post(self):
+        """Handle POST requests for creating a new booking."""
+        
+        try:
+            form_data = request.get_json()
+
+            new_booking = Booking(
+                event_id = form_data.get("event_id"),
+                user_id = form_data.get("user_id"),
+                quantity = form_data.get("quantity"),
+                total_ticket_price = form_data.get("total_ticket_price"),
+                created_at = form_data.get("ticket_price"),
+                guest_name = form_data.get("guest_name"),
+                guest_email = form_data.get("guest_email"),
+                guest_phone = form_data.get("guest_phone")
             )
-            db.session.add(newBooking)
+            db.session.add(new_booking)
             db.session.commit()
 
             return make_response(jsonify({"message": "Event booked successfully"}))
@@ -186,6 +207,8 @@ class BookingResource(Resource):
             return make_response(jsonify({"message": "Error creating booking"}))
         
     def get(self, id):
+        """Handle POST requests for getting bookings."""
+
         try: 
             bookings = Booking.query.filter_by(user_id = id).all()
 
@@ -207,21 +230,25 @@ class BookingResource(Resource):
 
 api.add_resource(BookingResource, "/bookings", "/booking/<int:id>")
 
-class AuthenticationResource(Resource):
+class RegisterResource(Resource):
+    """API resource for registering user."""
+
     def post(self):
+        """Handle POST request for creating a new user."""
+
         try:
-            formData = request.get_json()
+            form_data = request.get_json()
 
-            password = formData.get("password")
-            hashed_password = bcrypt.generate_password_hash(password).decode(utf-8)
+            password = form_data.get("password")
+            hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
-            newUser = User(
-                name = formData.get("name"),
-                email = formData.get("email"),
+            new_user = User(
+                name = form_data.get("name"),
+                email = form_data.get("email"),
                 password = hashed_password,
-                phone_number = formData.get("phone_number")
+                phone_number = form_data.get("phone_number")
             )
-            db.session.add(newUser)
+            db.session.add(new_user)
             db.session.commit()
 
             return make_response(jsonify({"message": "User created successfully"}))
@@ -230,7 +257,40 @@ class AuthenticationResource(Resource):
             print(e)
             return make_response(jsonify({"message": "Error creating user"}))
 
-api.add_resource(AuthenticationResource, "/register")
+api.add_resource(RegisterResource, "/register")
+
+class LoginResource(Resource):
+    """API resource for logging user."""
+
+    def post(self):
+        """Handle POST requests for logging user."""
+
+        try:
+            form_data = request.get_json()
+            email = form_data.get("email")
+            password = form_data.get("password")
+
+            user = User.query.filter_by(email = email).first()
+
+            if user and (bcrypt.check_password_hash(user.password, password)):
+                access_token = create_access_token(identity={"email":user.email})
+                refresh_token = create_refresh_token(identity={"email":user.email})
+
+                response = make_response(jsonify({
+                    'access_token': access_token,
+                    'id': user.id,
+                    'username': user.name,
+                    'role': user.role,
+                    'refresh_token':refresh_token
+                }), 200)
+
+                return response
+
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Invalid email or password"}))
+        
+api.add_resource(LoginResource, "/login")
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -310,5 +310,61 @@ class RefreshToken(Resource):
 
 api.add_resource(RefreshToken, "/refresh")
 
+class UserResource(Resource):
+    """API resource for handling booking-related operations."""
+
+    def get(self, id=None):
+        """Handle GET requests for specific user."""
+        try: 
+            if id: 
+                user = User.query.filter_by(id = id).first()
+
+                if user:
+                    return make_response(jsonify({
+                        "id": user.id,
+                        "name": user.name,
+                        "email": user.email,
+                        "phone_number": user.phone_number,
+                        "role": user.role
+                    }))
+            
+            else: 
+                users = User.query.all()
+
+                return make_response(jsonify(
+                    [{
+                        "name": item.name,
+                        "email":item.email,
+                        "phone_number":item.phone_number, 
+                        "role": item.role  
+                    } for item in users]
+                ))
+
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"messsage": "Error getting user"}))
+
+    def put(self, id):
+        """Handle GET requests for specific user."""
+        try: 
+            user = User.query.filter_by(id = id).first()
+
+            form_data = request.get_json()
+            user.name = form_data.get("name")
+            user.email = form_data.get("email")
+            user.password = form_data.get("password")
+            user.phone_number = form_data.get("phone_number")
+            user.role = form_data.get("role")
+
+            db.session.commit()
+
+            return make_response(jsonify({"message": "User updated successfully"}))
+    
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error updating user"}))
+        
+api.add_resource(UserResource, "/users", "/users/<int:id>")
+
 if __name__ == "__main__":
     app.run(debug=True)

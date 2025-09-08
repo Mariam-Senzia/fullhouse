@@ -29,10 +29,11 @@ api = Api(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-# 🚨 Dev-only: reset DB immediately when app starts
-# with app.app_context():
-#     db.drop_all()
-#     db.create_all()
+class HomeResource(Resource):
+    def get(self):
+        return make_response(jsonify({"message": "Welcome to Fullhouse API"}))
+
+api.add_resource(HomeResource ,'/api/v1')
 
 class EventResource(Resource):
     """API resource for handling event-related operations."""
@@ -248,22 +249,48 @@ class RegisterResource(Resource):
             password = form_data.get("password")
             hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
+            email = form_data.get("email")
+            existing_user = User.query.filter_by(email = email).first()
+
+            if existing_user:
+                return make_response(jsonify({"message": "User already exists"}))
+            
             new_user = User(
                 name = form_data.get("name"),
-                email = form_data.get("email"),
+                email = email,
                 password = hashed_password,
                 phone_number = form_data.get("phone_number")
             )
             db.session.add(new_user)
             db.session.commit()
 
-            return make_response(jsonify({"message": "User created successfully"}))
+            new_role = Role(
+                user_id = new_user.id
+            )
+            db.session.add(new_role)
+            db.session.commit()
+
+            return make_response(jsonify({
+                "message": "User created successfully",
+                "user": {
+                    "id": new_user.id,
+                    "name": new_user.name,
+                    "email": new_user.email,
+                    "phone_number": new_user.phone_number,
+                    "created_at": new_user.created_at
+                },
+                "role": {
+                    "id": new_role.id,
+                    "role": new_role.role,
+                    "created_at": new_role.created_at
+                }
+            }), 201)
 
         except Exception as e:
             print(e)
             return make_response(jsonify({"message": "Error creating user"}))
 
-api.add_resource(RegisterResource, "/register")
+api.add_resource(RegisterResource, "/api/v1/auth")
 
 class LoginResource(Resource):
     """API resource for logging user."""
@@ -286,7 +313,6 @@ class LoginResource(Resource):
                     'access_token': access_token,
                     'id': user.id,
                     'username': user.name,
-                    'role': user.role,
                     'refresh_token':refresh_token
                 }), 200)
 
@@ -296,7 +322,7 @@ class LoginResource(Resource):
             print(e)
             return make_response(jsonify({"message": "Invalid email or password"}))
         
-api.add_resource(LoginResource, "/login")
+api.add_resource(LoginResource, "/api/v1/auth/login")
 
 class RefreshToken(Resource):
     """API resource for refreshing tokens."""
@@ -314,7 +340,7 @@ class RefreshToken(Resource):
             print(e)
             return make_response(jsonify({"message": "Error generating tokens"}))
 
-api.add_resource(RefreshToken, "/refresh")
+api.add_resource(RefreshToken, "/api/v1/auth/refresh")
 
 class UserResource(Resource):
     """API resource for handling booking-related operations."""
@@ -342,7 +368,8 @@ class UserResource(Resource):
                         "name": item.name,
                         "email":item.email,
                         "phone_number":item.phone_number, 
-                        "role": item.role  
+                        "created_at": item.created_at
+                        # "role": item.role  
                     } for item in users]
                 ))
 
@@ -370,7 +397,7 @@ class UserResource(Resource):
             print(e)
             return make_response(jsonify({"message": "Error updating user"}))
         
-api.add_resource(UserResource, "/users", "/users/<int:id>")
+api.add_resource(UserResource, "/api/v1/users", "/users/<int:id>")
 
 if __name__ == "__main__":
     app.run(debug=True)

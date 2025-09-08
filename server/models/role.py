@@ -6,5 +6,5 @@ class Role(db.Model):
 
   id = db.Column(db.Integer, primary_key=True)
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-  role = db.Column(db.Enum("organizer", "attendee"))
+  role = db.Column(db.Enum("organizer", "attendee"), default="organizer")
   created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)	

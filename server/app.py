@@ -4,8 +4,9 @@ from models.init import db
 from models.user import User
 from models.event import Event
 from models.booking import Booking
-from models.payment import Payment
-from models.checkin import Checkin
+from models.role import Role
+from models.category import Category
+# from models.payment import Payment
 from flask_restful import Api, Resource
 from datetime import datetime
 import re
@@ -27,6 +28,11 @@ migrate = Migrate(app, db)
 api = Api(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
+
+# 🚨 Dev-only: reset DB immediately when app starts
+# with app.app_context():
+#     db.drop_all()
+#     db.create_all()
 
 class EventResource(Resource):
     """API resource for handling event-related operations."""

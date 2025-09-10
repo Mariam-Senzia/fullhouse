@@ -9,6 +9,7 @@ class Booking(db.Model):
     user_id	= db.Column(db.Integer, db.ForeignKey('users.id'))
     tickets_quantity = db.Column(db.Integer)
     event_price = db.Column(db.Numeric(10,2))
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     checked_in = db.Column(db.Boolean, default=False )	
     checked_in_Date = db.Column(db.DateTime)

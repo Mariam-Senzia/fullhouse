@@ -6,7 +6,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    email = db.Column(db.String)
+    email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.Text)
     phone_number = db.Column(db.String)	
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)	

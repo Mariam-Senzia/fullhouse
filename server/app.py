@@ -8,7 +8,7 @@ from models.role import Role
 from models.category import Category
 # from models.payment import Payment
 from flask_restful import Api, Resource
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, get_jwt_identity, jwt_required
@@ -22,6 +22,7 @@ app =  Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=1) 
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -53,6 +54,43 @@ class GetmeResource(Resource):
             "email": user.email,
             "phone_number": user.phone_number,
         }), 200)
+
+    
+    @jwt_required()
+    def put(self):
+        try:
+            logged_in_user = int(get_jwt_identity())
+
+            id=logged_in_user
+
+            user = User.query.filter_by(id = id).first()
+
+            if not user:
+                return make_response(jsonify({"message": "User not found"}), 404)
+
+            form_data = request.get_json()
+
+            if "name" in form_data:
+                user.name = form_data["name"]
+
+            if "phone_number" in form_data:
+                user.phone_number = form_data["phone_number"]
+
+            db.session.commit()
+                
+
+            return make_response(jsonify({
+                "message": "User updated successfully",
+                "user": {
+                    "id": user.id,
+                    "name": user.name,
+                    "phone_number": user.phone_number
+                    }
+                }), 200)
+        
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error updating user"}))
 
 api.add_resource(GetmeResource, '/api/v1/auth/getme')
 
@@ -161,97 +199,40 @@ class RefreshToken(Resource):
 
 api.add_resource(RefreshToken, "/api/v1/auth/refresh")
 
-class UserResource(Resource):
-    """API resource for handling booking-related operations."""
-
-    def get(self, id=None):
-        """Handle GET requests for specific user."""
-        try: 
-            if id: 
-                user = User.query.filter_by(id = id).first()
-
-                if user:
-                    return make_response(jsonify({
-                        "id": user.id,
-                        "name": user.name,
-                        "email": user.email,
-                        "phone_number": user.phone_number,
-                        "role": user.role
-                    }))
-            
-            else: 
-                users = User.query.all()
-
-                return make_response(jsonify(
-                    [{
-                        "name": item.name,
-                        "email":item.email,
-                        "phone_number":item.phone_number, 
-                        "created_at": item.created_at
-                        # "role": item.role  
-                    } for item in users]
-                ))
-
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"messsage": "Error getting user"}))
-
-    def put(self, id):
-        """Handle GET requests for specific user."""
-        try: 
-            user = User.query.filter_by(id = id).first()
-
-            form_data = request.get_json()
-            user.name = form_data.get("name")
-            user.email = form_data.get("email")
-            user.password = form_data.get("password")
-            user.phone_number = form_data.get("phone_number")
-            user.role = form_data.get("role")
-
-            db.session.commit()
-
-            return make_response(jsonify({"message": "User updated successfully"}))
-    
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"message": "Error updating user"}))
-        
-api.add_resource(UserResource, "/api/v1/users", "/api/v1/users/<int:id>")
-
 class CategoryResource(Resource):
     """API resource for handling category-related operations."""
 
-    def post(self):
-        """Handle POST requests for creating categories."""
+    # def post(self):
+    #     """Handle POST requests for creating categories."""
 
-        try:
-            form_data = request.get_json()
-            name = form_data.get("name")
+    #     try:
+    #         form_data = request.get_json()
+    #         name = form_data.get("name")
 
-            category = Category.query.filter_by(name = name).first()
+    #         category = Category.query.filter_by(name = name).first()
 
-            if category:
-                return make_response(jsonify({"message": "Event category already exists"}))
+    #         if category:
+    #             return make_response(jsonify({"message": "Event category already exists"}))
 
-            newCatgory = Category(
-                name = name,
-                description = form_data.get("description")
-            )
-            db.session.add(newCatgory)
-            db.session.commit()
+    #         newCatgory = Category(
+    #             name = name,
+    #             description = form_data.get("description")
+    #         )
+    #         db.session.add(newCatgory)
+    #         db.session.commit()
 
-            return make_response(jsonify({
-                "message": "Category created successfully",
-                "category": {     
-                    "name": newCatgory.name,
-                    "description": newCatgory.description,
-                    "id": newCatgory.id
-                }
-            }), 200)
+    #         return make_response(jsonify({
+    #             "message": "Category created successfully",
+    #             "category": {     
+    #                 "name": newCatgory.name,
+    #                 "description": newCatgory.description,
+    #                 "id": newCatgory.id
+    #             }
+    #         }), 200)
 
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"message": "Error creating category"}))
+    #     except Exception as e:
+    #         print(e)
+    #         return make_response(jsonify({"message": "Error creating category"}))
 
     def get(self):
         try:
@@ -267,14 +248,14 @@ class CategoryResource(Resource):
             print(e)
             return make_response(jsonify({"message":"Error getting categories"}))
 
-    def delete(self, id):
-        category = Category.query.filter_by(id = id).first()
+    # def delete(self, id):
+    #     category = Category.query.filter_by(id = id).first()
 
-        if category:
-            db.session.delete(category)
-            db.session.commit()
+    #     if category:
+    #         db.session.delete(category)
+    #         db.session.commit()
 
-            return make_response(jsonify({"message": "event deleted successfully"}))
+    #         return make_response(jsonify({"message": "event deleted successfully"}))
 
 api.add_resource(CategoryResource, '/api/v1/categories', '/api/v1/categories/<int:id>')
 
@@ -322,12 +303,9 @@ class EventResource(Resource):
             return make_response(jsonify({
                 "message": "Event created successfully",
                 "event": {
-                    "user_id": new_event.user_id,
-                    "category_id": new_event.category_id,
+                    "id": new_event.id,
                     "name": new_event.name,
                     "description": new_event.description,
-                    "latitude": new_event.latitude,
-                    "longitude": new_event.longitude,
                     "event_date": new_event.event_date.strftime("%d-%b-%Y"), 
                     "start_time": new_event.start_time.strftime("%H:%M"),     
                     "end_time": new_event.end_time.strftime("%H:%M"),
@@ -339,65 +317,47 @@ class EventResource(Resource):
             print(e)
             return make_response(jsonify({"message": "Failed to create event"}), 404)
         
-    def get(self, id=None):
-        """Handle GET requests for getting an event."""
+    @jwt_required()
+    def get(self):
+        """Handle GET requests for getting an event of a logged in organizer."""
 
         try:
-            if id:
-                event = db.session.get(Event, id)
+            user_id = int(get_jwt_identity())
 
-                return make_response(jsonify(
-                    {
-                        "id": event.id,
-                        "user_id": event.user_id, 
-                        "category_id": event.category_id, 
-                        "name": event.name, 
-                        "description": event.description, 
-                        "latitude": event.latitude,
-                        "longitude": event.longitude,
-                        "event_date": event.event_date.strftime("%d %b %Y") if event.date else None, 
-                        "start_time": event.start_time.strftime("%I:%M %p") if event.start_time else None, 
-                        "end_time": event.end_time.strftime("%I:%M %p") if event.end_time else None, 
-                        "ticket_price": str(event.ticket_price), 
-                        "created_at": event.created_at.strftime("%d %b %Y %I:%M %p") if event.created_at else None
-                    }
-                    ), 200)
-            else:
-                events = Event.query.all()
+            if not user_id:
+                return make_response(jsonify({"message": "No user found"}))
 
-                return jsonify(
-                    [{
-                        "id": item.id,
-                        "user_id": item.user_id, 
-                        "category_id": item.category_id, 
-                        "name": item.name, 
-                        "description": item.description, 
-                        "latitude": item.latitude,
-                        "longitude": item.longitude,
-                        "event_date": item.event_date.strftime("%d %b %Y") if item.event_date else None, 
-                        "start_time": item.start_time.strftime("%I:%M %p") if item.start_time else None, 
-                        "end_time": item.end_time.strftime("%I:%M %p") if item.end_time else None, 
-                        "ticket_price": str(item.ticket_price), 
-                        "created_at": item.created_at.strftime("%d %b %Y %I:%M %p") if item.created_at else None
-                        } for item in events]
-                    )
+            events = Event.query.filter_by(user_id = user_id).all()
+
+            return make_response(jsonify([
+                {
+                    "id": event.id,
+                    "category_id": event.category_id, 
+                    "name": event.name, 
+                    "description": event.description, 
+                    "event_date": event.event_date.strftime("%d %b %Y") if event.event_date else None,     
+                } for event in events
+            ]), 200)
 
         except Exception as e:
             print(e)
-            if id:
-                make_response(jsonify({"message": "Error getting event"}), 404)
-            else:
-                make_response(jsonify({"message": "Failed to get events"}), 404)
+            make_response(jsonify({"message": "Error getting event"}), 404)
+
         
+    @jwt_required()   
     def put(self, id):
-        """Handle PUT requests for updating an event."""
+        """Handle PUT requests for updating an event of a logged in organizer."""
 
         try:
-            event = db.session.query(Event, id)
+            user_id = int(get_jwt_identity())
+            event = Event.query.filter_by(id=id, user_id=user_id).first()
+
+            if not event:
+                return make_response(jsonify({"message": "Event not found or not yours"}), 404)
 
             form_data = request.get_json()
 
-            date_str = form_data.get("date")
+            date_str = form_data.get("event_date")
             date_obj = datetime.strptime(
             re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', date_str),
             "%d %b %Y"
@@ -409,34 +369,48 @@ class EventResource(Resource):
             end_time_str = form_data.get("end_time")
             end_time_obj = datetime.strptime(end_time_str, "%I:%M %p").time()
 
-            event.title = form_data.get("title")
+            event.name = form_data.get("name")
             event.description = form_data.get("description")
-            event.category = form_data.get("category")
-            event.date = date_obj
+            event.category_id = form_data.get("category_id")
+            event.event_date = date_obj
             event.start_time = start_time_obj
             event.end_time = end_time_obj
-            event.location = form_data.get("location")
-            event.capacity = form_data.get("capacity")
+            event.latitude = form_data.get("latitude")
+            event.longitude = form_data.get("longitude")
             event.ticket_price = form_data.get("ticket_price")
-            event.created_at = form_data.get("created_at")
-
+            
             db.session.commit()
 
-            return make_response(jsonify({"message": "Event updated successfully"}), 200)
+            return make_response(jsonify({
+                "message": "Event updated successfully",
+                "event": {
+                    "id": event.id,
+                    "name": event.name,
+                    "description": event.description,
+                    "event_date": event.event_date.strftime("%d-%b-%Y"), 
+                    "start_time": event.start_time.strftime("%H:%M"),     
+                    "end_time": event.end_time.strftime("%H:%M"),
+                    "ticket_price": event.ticket_price,
+                }
+                }), 200)
 
         except Exception as e:
             print(e)
             return make_response(jsonify({"message": "Error updating event"}), 404)
 
+    @jwt_required()
     def delete(self, id):
         """Handle DELETE requests for updating an event."""
 
         try:
-            event = db.session.get(Event, id)
+            user_id = int(get_jwt_identity())
+            event = Event.query.filter_by(id=id, user_id=user_id).first()
 
-            if event:
-                db.session.delete(event)
-                db.session.commit()
+            if not event:
+                return make_response(jsonify({"message": "Event not found or not yours"}), 404)
+
+            db.session.delete(event)
+            db.session.commit()
 
             return make_response(jsonify({"message": "Event deleted successfully"}), 200)
 
@@ -445,6 +419,39 @@ class EventResource(Resource):
             return make_response(jsonify({"message": "Error updating event"}), 404)
 
 api.add_resource(EventResource,'/api/v1/events', '/api/v1/event/<int:id>')
+
+class EventDetailResource(Resource):
+    """API resource for handling event detail operations."""
+
+    @jwt_required()
+    def get(self, id):
+        """Handle POST requests for getting an event detail."""
+
+        try:
+            user_id = int(get_jwt_identity())
+            event = Event.query.filter_by(id=id, user_id=user_id).first()
+
+            if not event:
+                return make_response(jsonify({"message": "Event not found or not yours"}), 404)
+
+            return make_response(jsonify({
+                "user_id" : event.user_id,
+                "category_id" : event.category_id,
+                "name" : event.name,
+                "description" : event.description,
+                "latitude" : event.latitude,
+                "longitude" : event.longitude,
+                "event_date" : event.event_date.strftime("%d-%b-%Y"),
+                "start_time" : event.start_time.strftime("%H:%M"),
+                "end_time" : event.end_time.strftime("%H:%M"),
+                "ticket_price" : event.ticket_price
+            }))
+
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Errorr getting an event's details"}))
+
+api.add_resource(EventDetailResource, '/api/v1/eventdetail/<int:id>')
 
 class BookingResource(Resource):
     """API resource for handling booking-related operations."""
@@ -455,20 +462,50 @@ class BookingResource(Resource):
         try:
             form_data = request.get_json()
 
+            name = form_data.get("name")
+            email = form_data.get("email")
+            phone_number = form_data.get("phone number")
+
+            existing_user = User.query.filter_by(email = email).first()
+
+            if existing_user:
+                user_id = existing_user.id
+            else:
+               new_user = User(
+                name = name,
+                email = email,
+                phone_number = phone_number
+               ) 
+               db.session.add(new_user)
+               db.session.commit()
+
+               user_id = new_user.id
+
+            event_id = form_data.get("event_id")
+            existing_event = Event.query.filter_by(id = event_id).first()
+            
             new_booking = Booking(
                 event_id = form_data.get("event_id"),
-                user_id = form_data.get("user_id"),
-                quantity = form_data.get("quantity"),
-                total_ticket_price = form_data.get("total_ticket_price"),
-                created_at = form_data.get("ticket_price"),
-                guest_name = form_data.get("guest_name"),
-                guest_email = form_data.get("guest_email"),
-                guest_phone = form_data.get("guest_phone")
+                user_id = user_id,
+                tickets_quantity = form_data.get("tickets_quantity"),
+                event_price = existing_event.ticket_price   
             )
             db.session.add(new_booking)
             db.session.commit()
 
-            return make_response(jsonify({"message": "Event booked successfully"}))
+            return make_response(jsonify({
+                "message": "Event booked successfully",
+                "booking": {
+                    "booking_id": new_booking.id,
+                    "event_id": new_booking.event_id,
+                    "user_id": new_booking.user_id,
+                    "tickets_quantity": new_booking.tickets_quantity,
+                    "event_price": new_booking.event_price,
+                    "created_at": new_booking.created_at,
+                    "checked_in": new_booking.checked_in,	
+                    "checked_in_Date": new_booking.checked_in_Date
+                    }
+                }))
 
         except Exception as e:
             print(e)
@@ -484,19 +521,18 @@ class BookingResource(Resource):
                 return make_response(jsonify([{
                     "event_id": item.event_id,
                     "user_id": item.user_id,
-                    "quantity": item.quantity,
-                    "total_ticket_price": item.total_ticket_price,
+                    "tickets_quantity": item.tickets_quantity,
+                    "event_price": item.event_price,
                     "created_at": item.created_at,
-                    "guest_name": item.guest_name,
-                    "guest_email": item.guest_email,
-                    "guest_phone": item.guest_phone
+                    "checked_in": item.checked_in,	
+                    "checked_in_Date": item.checked_in_Date
                 } for item in bookings]), 200)
             
         except Exception as e:
             print(e)
             return make_response(jsonify({"message": "Error getting booking"}))
 
-api.add_resource(BookingResource, "/bookings", "/booking/<int:id>")
+api.add_resource(BookingResource, "/api/v1/bookings", "/api/v1/booking/<int:id>")
 
 
 

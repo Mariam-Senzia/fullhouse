@@ -22,6 +22,7 @@ app =  Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1) 
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=1) 
 
 db.init_app(app)
@@ -510,31 +511,56 @@ class BookingResource(Resource):
         except Exception as e:
             print(e)
             return make_response(jsonify({"message": "Error creating booking"}))
-        
-    def get(self, id):
-        """Handle POST requests for getting bookings."""
 
-        try: 
-            bookings = Booking.query.filter_by(user_id = id).all()
+    # @jwt_required()    
+    # def get(self, id):
+    #     """Handle POST requests for getting bookings."""
 
-            if bookings:
-                return make_response(jsonify([{
-                    "event_id": item.event_id,
-                    "user_id": item.user_id,
-                    "tickets_quantity": item.tickets_quantity,
-                    "event_price": item.event_price,
-                    "created_at": item.created_at,
-                    "checked_in": item.checked_in,	
-                    "checked_in_Date": item.checked_in_Date
-                } for item in bookings]), 200)
+    #     try: 
+    #         user_id = int(get_jwt_identity())
+
+    #         bookings = Booking.query.filter_by(id = id, user_id = user_id).all()
+
+    #         if not bookings:
+    #             return make_response(jsonify({"message": "Booking not found or not yours"}), 404)
+
+    #         return make_response(jsonify([{
+    #             "event_id": item.event_id,
+    #             "user_id": item.user_id,
+    #             "tickets_quantity": item.tickets_quantity,
+    #             "event_price": item.event_price,
+    #             "created_at": item.created_at,
+    #             "checked_in": item.checked_in,	
+    #             "checked_in_Date": item.checked_in_Date
+    #             } for item in bookings]), 200)
             
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"message": "Error getting booking"}))
+    #     except Exception as e:
+    #         print(e)
+    #         return make_response(jsonify({"message": "Error getting booking"}))
 
 api.add_resource(BookingResource, "/api/v1/bookings", "/api/v1/booking/<int:id>")
 
 
+# Payment Integration
+class IPNResource(Resource):
+    """API resource for handling payment webhooks."""
+
+    def post(self):
+        try:
+            form_data = request.get_json()
+
+            print(form_data)
+
+            OrderTrackingId = form_data.get("OrderTrackingId")
+            hello = form_data.get("hello")
+
+            return make_response(jsonify(True), 200)
+
+        except Exception as e:
+            print(e)   
+            return make_response(jsonify({"message": "Error posting IPN url"}))
+
+api.add_resource(IPNResource, '/api/v1/webhook')
 
 
 

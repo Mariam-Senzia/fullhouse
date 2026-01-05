@@ -8,7 +8,7 @@ const Search = () => {
         <input
           type="text"
           placeholder="Search events"
-          className="w-full py-2 pl-12 pr-4 border border-gray-300 rounded-full focus:outline-none focus:shadow-md hover:shadow-md"
+          className="w-full py-2 pl-12 pr-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-md hover:shadow-md"
         />
       </div>
     </>

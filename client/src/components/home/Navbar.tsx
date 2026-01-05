@@ -6,7 +6,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
-      <nav className="bg-white w-full px-4 lg:px-16 py-2 shadow-sm">
+      <nav className="bg-white w-full px-4 lg:px-28 py-2 shadow-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center md:gap-4 lg:gap-8">
             <div>
@@ -36,7 +36,7 @@ const Navbar = () => {
             <button className="">Login</button>
             <button className="relative flex items-center justify-center pr-5">
               <FaCartShopping className="text-gray-700 text-lg" />
-              <span className="absolute -right-0.5 md:-right-1 bg-pink-600 rounded-full text-white text-sm h-4 w-4 flex items-center justify-center font-semibold">
+              <span className="absolute -right-0.5 md:-right-1 bg-[#cc4324] rounded-full text-white text-sm h-4.5 w-4.5 flex items-center justify-center font-semibold">
                 0
               </span>
             </button>
@@ -59,11 +59,11 @@ const Navbar = () => {
 
       {/* mobile */}
       <div
-        className={`md:hidden border-t border-gray-200 overflow-hidden transition-all duration-300 ${
+        className={`md:hidden border-t border-gray-200 absolute z-50 w-100 overflow-hidden transition-all duration-300 ${
           isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-5 py-5 space-y-8 bg-gray-50">
+        <div className="px-5 py-8 space-y-8 bg-gray-50">
           <a
             href=""
             className="block transition-transform hover:-translate-y-0.5 hover:text-[#cc4324] duration-300"
@@ -77,12 +77,6 @@ const Navbar = () => {
             Create Events
           </a>
           <button className="">Login</button>
-          <button className="relative flex items-center justify-center pr-5">
-            <FaCartShopping className="text-gray-700 text-lg" />
-            <span className="absolute -right-0.5 md:-right-1 bg-pink-600 rounded-full text-white text-sm h-4 w-4 flex items-center justify-center font-semibold">
-              0
-            </span>
-          </button>
         </div>
       </div>
     </>

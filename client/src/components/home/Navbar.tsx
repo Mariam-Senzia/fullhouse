@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <>
       <Container>
-        <nav className="bg-white w-full py-2 shadow-sm">
+        <nav className="bg-white w-full py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center md:gap-4 lg:gap-8">
               <div>

@@ -3,6 +3,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { useState } from "react";
+import Container from "../global/container";
 
 const events = [
   {
@@ -63,46 +64,48 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
               </div>
 
-              <div
-                key={slideKey}
-                className="relative z-10 px-4 md:px-6 lg:px-28 max-w-5xl text-white animate-fade-in"
-              >
-                <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-wide">
-                  {event.title[0]}
-                  <br />
-                  {event.title[1]}
-                </h1>
+              <Container>
+                <div
+                  key={slideKey}
+                  className="relative z-10 max-w-5xl text-white animate-fade-in"
+                >
+                  <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-wide">
+                    {event.title[0]}
+                    <br />
+                    {event.title[1]}
+                  </h1>
 
-                <div className="flex flex-col gap-4 md:gap-6 mb-10 text-lg">
-                  <div className="flex items-center gap-2">
-                    <FaMapMarkerAlt />
-                    <span>{event.location}</span>
+                  <div className="flex flex-col gap-4 md:gap-6 mb-10 text-lg">
+                    <div className="flex items-center gap-2">
+                      <FaMapMarkerAlt />
+                      <span>{event.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaCalendarAlt />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaClock />
+                      <span>{event.time}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <FaCalendarAlt />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FaClock />
-                    <span>{event.time}</span>
-                  </div>
-                </div>
 
-                <div className="relative inline-block">
-                  <button className="absolute -left-1 -bottom-1 bg-gray-300 px-8 py-2 rounded-sm shadow-md text-gray-800 pointer-events-none transition-all duration-200 group-hover:-left-2 group-hover:-bottom-2">
-                    LEARN MORE
-                  </button>
-
-                  <a href="#">
-                    <button
-                      className="relative bg-[#cc4324] px-8 py-2 rounded-sm font-semibold shadow-lg 
-                      transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
-                    >
-                      GET TICKETS
+                  <div className="relative inline-block">
+                    <button className="absolute -left-1 -bottom-1 bg-gray-300 px-8 lg:px-10 py-3 rounded-sm shadow-md text-gray-800 pointer-events-none transition-all duration-200 group-hover:-left-2 group-hover:-bottom-2">
+                      LEARN MORE
                     </button>
-                  </a>
+
+                    <a href="#">
+                      <button
+                        className="relative bg-[#cc4324] px-8 lg:px-10 py-3 rounded-sm font-semibold shadow-lg 
+                      transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
+                      >
+                        GET TICKETS
+                      </button>
+                    </a>
+                  </div>
                 </div>
-              </div>
+              </Container>
             </div>
           </SwiperSlide>
         ))}

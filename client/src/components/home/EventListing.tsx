@@ -126,14 +126,12 @@ const EventListing = () => {
             </div>
           </div>
 
-          <div className="relative inline-block w-50">
-            <button className="absolute -left-1 -bottom-1 bg-gray-300 px-16 py-3 rounded-sm shadow-md text-gray-800 pointer-events-none transition-all duration-200 group-hover:-left-2 group-hover:-bottom-2">
-              LEARN
-            </button>
+          <div className="relative inline-block lg:w-50">
+            <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
             <a href="#">
               <button
-                className="relative uppercase text-white bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg 
+                className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg 
                 transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
               >
                 Filter
@@ -200,6 +198,18 @@ const EventListing = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-center my-12">
+          <div className="relative inline-block">
+            <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
+
+            <a href="#">
+              <button className="relative uppercase border border-[#cc4324] text-gray-600 bg-white px-16 py-3 rounded-sm font-semibold transition-all duration-300 hover:-translate-x-0.5 hover:translate-y-0.5 hover:text-[#cc4324] hover:border-red-600">
+                Load more events
+              </button>
+            </a>
+          </div>
         </div>
       </Container>
     </>

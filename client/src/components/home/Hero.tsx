@@ -91,9 +91,11 @@ const Hero = () => {
                   </div>
 
                   <div className="relative inline-block">
-                    <button className="absolute -left-1 -bottom-1 bg-gray-300 px-8 lg:px-10 py-3 rounded-sm shadow-md text-gray-800 pointer-events-none transition-all duration-200 group-hover:-left-2 group-hover:-bottom-2">
+                    {/* <button className="absolute -left-1 -bottom-1 bg-gray-300 px-8 lg:px-10 py-3 rounded-sm shadow-md text-gray-800 pointer-events-none transition-all duration-200 group-hover:-left-2 group-hover:-bottom-2">
                       LEARN MORE
-                    </button>
+                    </button> */}
+
+                    <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
                     <a href="#">
                       <button

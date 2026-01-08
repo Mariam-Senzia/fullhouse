@@ -113,7 +113,7 @@ const Hero = () => {
         ))}
       </Swiper>
 
-      <div className="absolute bottom-6 right-6 z-20 hidden md:flex gap-4 text-white px-4 lg:pr-24">
+      <div className="absolute bottom-6 right-6 z-20 hidden md:flex gap-4 text-white px-4 md:px-2 lg:pr-36">
         <button className="hero-prev flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
           <FaChevronLeft className="group-hover:-translate-x-1 transition-transform" />
           <span>Prev</span>

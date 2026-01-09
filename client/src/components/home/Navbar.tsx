@@ -12,11 +12,13 @@ const Navbar = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center md:gap-4 lg:gap-8">
               <div>
-                <img
-                  src="/logo.png"
-                  alt="fullhouse logo"
-                  className="h-10 md:h-10 lg:h-13"
-                />
+                <a href="/">
+                  <img
+                    src="/logo.png"
+                    alt="fullhouse logo"
+                    className="h-10 md:h-10 lg:h-13"
+                  />
+                </a>
               </div>
 
               <Search />
@@ -24,18 +26,23 @@ const Navbar = () => {
 
             <div className="hidden md:flex items-center gap-8">
               <a
-                href=""
-                className="transition-transform hover:-translate-y-0.5 hover:text-[#cc4324] duration-300"
+                href="#events"
+                className="transition-transform hover:text-[#cc4324] duration-300"
               >
                 Find Events
               </a>
               <a
-                href=""
-                className="transition-transform hover:-translate-y-0.5 hover:text-[#cc4324] duration-300"
+                href="/createEvents"
+                className="transition-transform hover:text-[#cc4324] duration-300"
               >
                 Create Events
               </a>
-              <button className="">Login</button>
+              <a
+                href="/login"
+                className="transition-transform hover:text-[#cc4324] duration-300"
+              >
+                Login
+              </a>
               <button className="relative flex items-center justify-center pr-5">
                 <FaCartShopping className="text-gray-700 text-lg" />
                 <span className="absolute -right-0.5 md:-right-1 bg-[#cc4324] rounded-full text-white text-sm h-4.5 w-4.5 flex items-center justify-center font-semibold">

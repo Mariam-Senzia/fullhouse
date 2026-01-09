@@ -27,7 +27,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="#"
+                  href="#events"
                   className="text-gray-400 hover:text-[#cc4324] transition-colors duration-200"
                 >
                   Find Events
@@ -35,7 +35,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/createEvents"
                   className="text-gray-400 hover:text-[#cc4324] transition-colors duration-200"
                 >
                   Create Events

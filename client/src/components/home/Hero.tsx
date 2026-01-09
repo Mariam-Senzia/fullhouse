@@ -61,7 +61,7 @@ const Hero = () => {
                 style={{ backgroundImage: `url('${event.image}')` }}
                 className="absolute inset-0 bg-cover bg-center"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+                <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/40" />
               </div>
 
               <Container>

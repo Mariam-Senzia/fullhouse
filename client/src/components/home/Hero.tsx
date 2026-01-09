@@ -91,10 +91,6 @@ const Hero = () => {
                   </div>
 
                   <div className="relative inline-block">
-                    {/* <button className="absolute -left-1 -bottom-1 bg-gray-300 px-8 lg:px-10 py-3 rounded-sm shadow-md text-gray-800 pointer-events-none transition-all duration-200 group-hover:-left-2 group-hover:-bottom-2">
-                      LEARN MORE
-                    </button> */}
-
                     <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
                     <a href="#">
@@ -108,21 +104,21 @@ const Hero = () => {
                   </div>
                 </div>
               </Container>
+
+              <div className="absolute bottom-6 md:right-10 lg:right-16 xl:right-4 2xl:right-41 z-20 hidden md:flex gap-4 text-white">
+                <button className="hero-prev flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
+                  <FaChevronLeft className="group-hover:-translate-x-1 transition-transform" />
+                  <span>Prev</span>
+                </button>
+                <button className="hero-next flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
+                  <span>Next</span>
+                  <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
-
-      <div className="absolute bottom-6 right-6 z-20 hidden md:flex gap-4 text-white px-4 md:px-2 lg:pr-36">
-        <button className="hero-prev flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
-          <FaChevronLeft className="group-hover:-translate-x-1 transition-transform" />
-          <span>Prev</span>
-        </button>
-        <button className="hero-next flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
-          <span>Next</span>
-          <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
 
       {/* Mobile*/}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex md:hidden gap-4">

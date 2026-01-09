@@ -1,9 +1,9 @@
-import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import { FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import Container from "../global/container";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-12 md:py-12">
+    <footer className="bg-[#111111] text-gray-300 py-12 md:py-12">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-8">
           <div>
@@ -14,13 +14,13 @@ const Footer = () => {
                 className="h-10 md:h-14 "
               />
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400  leading-relaxed">
               Discover and book amazing events across Kenya. From concerts to
               conferences, find experiences that matter to you.
             </p>
           </div>
 
-          <div className="lg:flex lg:flex-col lg:items-center">
+          <div className="md:flex md:flex-col md:items-center">
             <h3 className="text-white font-semibold text-lg mb-4">
               Quick Links
             </h3>
@@ -44,9 +44,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-4">
-              Contact Us
+          <div className="lg:flex lg:flex-col lg:items-center">
+            <h3 className="text-white font-semibold text-lg mb-4 ">
+              Contact Information
             </h3>
             <ul className="space-y-4">
               <li className="flex gap-3">
@@ -71,7 +71,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-6 border-t border-gray-800">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500">
             &copy; {new Date().getFullYear()} FullHouse. All rights reserved.
           </p>
         </div>

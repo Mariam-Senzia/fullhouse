@@ -7,8 +7,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
-      <Container>
-        <nav className="bg-white w-full py-2">
+      <nav className="bg-white w-full py-2 sticky top-0 z-50 shadow-sm">
+        <Container>
           <div className="flex justify-between items-center">
             <div className="flex items-center md:gap-4 lg:gap-8">
               <div>
@@ -57,12 +57,12 @@ const Navbar = () => {
               </button>
             </div>
           </div>
-        </nav>
-      </Container>
+        </Container>
+      </nav>
 
       {/* mobile */}
       <div
-        className={`md:hidden border-t border-gray-200 absolute z-50 w-100 overflow-hidden transition-all duration-300 ${
+        className={`md:hidden border-t border-gray-200 fixed top-13 left-0 right-0 z-50 w-100 overflow-hidden transition-all duration-300 ${
           isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >

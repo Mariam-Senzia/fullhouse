@@ -5,6 +5,8 @@ import CreateEvents from "./pages/CreateEvents";
 import EventDetails from "./pages/EventDetails";
 import BuyerLogin from "./pages/BuyerLogin";
 import MerchantLogin from "./pages/MerchantLogin";
+import BuyerSignUp from "./pages/BuyerSignUp";
+import MerchantSignUp from "./pages/MerchantSignUp";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/merchantLogin" element={<MerchantLogin />} />
           <Route path="/createEvents" element={<CreateEvents />} />
           <Route path="/eventDetails" element={<EventDetails />} />
+          <Route path="/buyerSignUp" element={<BuyerSignUp />} />
+          <Route path="/MerchantSignUp" element={<MerchantSignUp />} />
         </Routes>
       </BrowserRouter>
     </>

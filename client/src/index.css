@@ -19,3 +19,9 @@ body {
 .animate-fade-in {
   animation: fade-in 0.8s ease-out;
 }
+
+.PhoneInputInput {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}

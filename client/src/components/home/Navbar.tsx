@@ -85,6 +85,7 @@ const Navbar = () => {
                         <FaStore className="text-md group-hover:text-[#cc4324] transition-transform duration-300" />
                         <a
                           href="/merchantLogin"
+                          target="_blank"
                           className="block transition-transform group-hover:text-[#cc4324] duration-300"
                         >
                           Merchant Login

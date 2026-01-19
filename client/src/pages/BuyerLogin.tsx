@@ -91,7 +91,7 @@ const BuyerLogin = () => {
                         <p className="text-sm text-gray-600">
                           Don't have an account?{" "}
                           <a
-                            href="#"
+                            href="/buyerSignUp"
                             className="text-[#cc4324] underline font-medium"
                           >
                             Sign Up

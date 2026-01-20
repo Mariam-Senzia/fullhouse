@@ -5,7 +5,7 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 const EventListing = () => {
   const events = [
     {
-      id: 4,
+      id: 1,
       title: "Jazz Night Live",
       subtitle: "Evening Concert",
       image:
@@ -15,9 +15,21 @@ const EventListing = () => {
       day: "Fri",
       price: "KES 1,500",
       category: "Music",
+
+      dateRange: "Fri, Jan 10, 2026",
+      time: "07:00 PM - 11:00 PM",
+      description:
+        "An intimate live jazz experience featuring local and international artists. Enjoy smooth sounds, great ambiance, and curated performances.",
+      ticket: {
+        type: "General Admission",
+        price: 1500,
+        validFrom: "Fri, Jan 10, 2026",
+        startTime: "07:00 PM",
+      },
     },
+
     {
-      id: 1,
+      id: 2,
       title: "Kunye",
       subtitle: "Sound Healing Journey",
       image:
@@ -27,10 +39,21 @@ const EventListing = () => {
       day: "Sat",
       price: "KES 2,500",
       category: "Wellness",
+
+      dateRange: "Sat, Feb 01, 2026",
+      time: "06:00 PM - 09:00 PM",
+      description:
+        "A guided sound healing experience combining music, meditation, and mindfulness to restore balance and clarity.",
+      ticket: {
+        type: "RSVP",
+        price: 2500,
+        validFrom: "Sat, Feb 01, 2026",
+        startTime: "06:00 PM",
+      },
     },
 
     {
-      id: 6,
+      id: 3,
       title: "Startup Pitch Night",
       subtitle: "Networking Event",
       image:
@@ -40,9 +63,21 @@ const EventListing = () => {
       day: "Wed",
       price: "KES 500",
       category: "Business",
+
+      dateRange: "Wed, Jan 15, 2026",
+      time: "05:30 PM - 09:00 PM",
+      description:
+        "An evening for founders and innovators to pitch ideas, connect with investors, and network with the startup community.",
+      ticket: {
+        type: "General",
+        price: 500,
+        validFrom: "Wed, Jan 15, 2026",
+        startTime: "05:30 PM",
+      },
     },
+
     {
-      id: 3,
+      id: 4,
       title: "Mombasa Rooftop Cinema",
       subtitle: "Movie Under The Stars",
       image:
@@ -52,6 +87,17 @@ const EventListing = () => {
       day: "Wed",
       price: "KES 1,000",
       category: "Entertainment",
+
+      dateRange: "Wed, Dec 17, 2025",
+      time: "08:00 PM - 11:00 PM",
+      description:
+        "Enjoy classic and modern films in an open-air rooftop setting with breathtaking coastal views.",
+      ticket: {
+        type: "Cinema Pass",
+        price: 1000,
+        validFrom: "Wed, Dec 17, 2025",
+        startTime: "08:00 PM",
+      },
     },
 
     {
@@ -65,9 +111,21 @@ const EventListing = () => {
       day: "Sat",
       price: "KES 8,500",
       category: "Wellness",
+
+      dateRange: "Sat, Jan 03 – Sun, Jan 04, 2026",
+      time: "All Day",
+      description:
+        "A peaceful weekend retreat focused on mindfulness, meditation, and relaxation in a serene natural setting.",
+      ticket: {
+        type: "Retreat Pass",
+        price: 8500,
+        validFrom: "Sat, Jan 03, 2026",
+        startTime: "08:00 AM",
+      },
     },
+
     {
-      id: 2,
+      id: 6,
       title: "How to Build a Library",
       subtitle: "Educational Workshop",
       image:
@@ -77,6 +135,17 @@ const EventListing = () => {
       day: "Mon",
       price: "Free",
       category: "Education",
+
+      dateRange: "Mon, Dec 01, 2025",
+      time: "10:00 AM - 02:00 PM",
+      description:
+        "A free educational workshop covering how to design, organize, and manage modern libraries for communities and institutions.",
+      ticket: {
+        type: "Free Entry",
+        price: 0,
+        validFrom: "Mon, Dec 01, 2025",
+        startTime: "10:00 AM",
+      },
     },
   ];
 
@@ -144,7 +213,7 @@ const EventListing = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
             {events.map((event) => (
               <>
-                <a href="/eventDetails">
+                <a href={`/eventDetails/${event.title}`}>
                   <div
                     key={event.id}
                     className="group bg-white rounded-sm overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"

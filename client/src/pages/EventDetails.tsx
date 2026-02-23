@@ -8,148 +8,10 @@ import {
 } from "react-icons/fa";
 import Navbar from "../components/home/Navbar";
 import { useParams } from "react-router-dom";
-
-const events = [
-  {
-    id: 1,
-    title: "Jazz Night Live",
-    subtitle: "Evening Concert",
-    image:
-      "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/jazz-night-flyer-template-design-de270da6f93bb0d4cab657f9572a765f_screen.jpg?ts=1636991643",
-    location: "Alliance Française",
-    date: "Jan 10",
-    day: "Fri",
-    price: "KES 1,500",
-    category: "Music",
-
-    dateRange: "Fri, Jan 10, 2026",
-    time: "07:00 PM - 11:00 PM",
-    description:
-      "An intimate live jazz experience featuring local and international artists. Enjoy smooth sounds, great ambiance, and curated performances.",
-    ticket: {
-      price: 1500,
-      validFrom: "Fri, Jan 10, 2026",
-      startTime: "07:00 PM",
-    },
-  },
-
-  {
-    id: 2,
-    title: "Kunye",
-    subtitle: "Sound Healing Journey",
-    image:
-      "https://egotickets-core-cdn.s3.eu-north-1.amazonaws.com/production/uploads/event/banner_photo/51436/mobile_33a7939eb00df892.jpg",
-    location: "Nairobi",
-    date: "Feb 01",
-    day: "Sat",
-    price: "KES 2,500",
-    category: "Wellness",
-
-    dateRange: "Sat, Feb 01, 2026",
-    time: "06:00 PM - 09:00 PM",
-    description:
-      "A guided sound healing experience combining music, meditation, and mindfulness to restore balance and clarity.",
-    ticket: {
-      price: 2500,
-      validFrom: "Sat, Feb 01, 2026",
-      startTime: "06:00 PM",
-    },
-  },
-
-  {
-    id: 3,
-    title: "Startup Pitch Night",
-    subtitle: "Networking Event",
-    image:
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80",
-    location: "iHub Nairobi",
-    date: "Jan 15",
-    day: "Wed",
-    price: "KES 500",
-    category: "Business",
-
-    dateRange: "Wed, Jan 15, 2026",
-    time: "05:30 PM - 09:00 PM",
-    description:
-      "An evening for founders and innovators to pitch ideas, connect with investors, and network with the startup community.",
-    ticket: {
-      price: 500,
-      validFrom: "Wed, Jan 15, 2026",
-      startTime: "05:30 PM",
-    },
-  },
-
-  {
-    id: 4,
-    title: "Mombasa Rooftop Cinema",
-    subtitle: "Movie Under The Stars",
-    image:
-      "https://img.freepik.com/premium-psd/tropic-beach-party-event-flyer-design_802174-300.jpg",
-    location: "City Mall Nyali",
-    date: "Dec 17",
-    day: "Wed",
-    price: "KES 1,000",
-    category: "Entertainment",
-
-    dateRange: "Wed, Dec 17, 2025",
-    time: "08:00 PM - 11:00 PM",
-    description:
-      "Enjoy classic and modern films in an open-air rooftop setting with breathtaking coastal views.",
-    ticket: {
-      price: 1000,
-      validFrom: "Wed, Dec 17, 2025",
-      startTime: "08:00 PM",
-    },
-  },
-
-  {
-    id: 5,
-    title: "Mindfulness Retreat",
-    subtitle: "Weekend Getaway",
-    image:
-      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80",
-    location: "Naivasha",
-    date: "Jan 03",
-    day: "Sat",
-    price: "KES 8,500",
-    category: "Wellness",
-
-    dateRange: "Sat, Jan 03 - Sun, Jan 04, 2026",
-    time: "All Day",
-    description:
-      "A peaceful weekend retreat focused on mindfulness, meditation, and relaxation in a serene natural setting.",
-    ticket: {
-      price: 8500,
-      validFrom: "Sat, Jan 03, 2026",
-      startTime: "08:00 AM",
-    },
-  },
-
-  {
-    id: 6,
-    title: "How to Build a Library",
-    subtitle: "Educational Workshop",
-    image:
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80",
-    location: "KICC Grounds",
-    date: "Dec 01",
-    day: "Mon",
-    price: "Free",
-    category: "Education",
-
-    dateRange: "Mon, Dec 01, 2025",
-    time: "10:00 AM - 02:00 PM",
-    description:
-      "A free educational workshop covering how to design, organize, and manage modern libraries for communities and institutions.",
-    ticket: {
-      price: 0,
-      validFrom: "Mon, Dec 01, 2025",
-      startTime: "10:00 AM",
-    },
-  },
-];
+import useEvents from "../components/hooks/useEvents";
 
 const EventDetailsPage = () => {
+  const events = useEvents();
   const [quantity, setQuantity] = useState(0);
 
   const { title } = useParams();
@@ -163,6 +25,24 @@ const EventDetailsPage = () => {
   const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () => setQuantity((prev) => Math.max(0, prev - 1));
   const subtotal = quantity * event.ticket.price;
+
+  const handleCart = () => {
+    if (quantity === 0) {
+      alert("Please select at least one ticket before proceeding.");
+      return;
+    }
+
+    console.log("Proceeding to cart...");
+  };
+
+  const handleCheckout = () => {
+    if (quantity === 0) {
+      alert("Please select a ticket");
+      return;
+    }
+
+    console.log("Proceeding to checkout...");
+  };
 
   return (
     <>
@@ -282,21 +162,27 @@ const EventDetailsPage = () => {
                   <div className="relative inline-block lg:w-full">
                     <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-                    <a href="#">
-                      <button className="relative w-full h-full uppercase border border-[#cc4324] text-gray-600 bg-white px-16 py-3 rounded-sm font-semibold transition-all duration-300 hover:-translate-x-0.5 hover:translate-y-0.5 hover:text-[#cc4324] hover:border-red-600">
-                        Add to Cart
-                      </button>
-                    </a>
+                    {/* <a href="#"> */}
+                    <button
+                      onClick={handleCart}
+                      className="relative w-full h-full uppercase border border-[#cc4324] text-gray-600 bg-white px-16 py-3 rounded-sm font-semibold transition-all duration-300 hover:-translate-x-0.5 hover:translate-y-0.5 hover:text-[#cc4324] hover:border-red-600"
+                    >
+                      Add to Cart
+                    </button>
+                    {/* </a> */}
                   </div>
 
                   <div className="relative inline-block lg:w-full">
                     <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-                    <a href="#">
-                      <button className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5">
-                        Filter
-                      </button>
-                    </a>
+                    {/* <a href="#"> */}
+                    <button
+                      onClick={handleCheckout}
+                      className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
+                    >
+                      Quick Buy
+                    </button>
+                    {/* </a> */}
                   </div>
                 </div>
               </div>

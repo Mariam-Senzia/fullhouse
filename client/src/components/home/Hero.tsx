@@ -4,32 +4,10 @@ import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { useState } from "react";
 import Container from "../global/container";
-
-const events = [
-  {
-    title: ["BRUNCH", "SING ALONG"],
-    location: "CARNIVORE GROUNDS",
-    date: "Feb 14, 2026",
-    time: "12:00 PM - 1:00 AM",
-    image: "/slide-1.jpg",
-  },
-  {
-    title: ["SHINCITY", "SHOWMAN"],
-    location: "NGONG RACECOURSE",
-    date: "April 4, 2026",
-    time: "3:00 PM - 12:00 AM",
-    image: "/slide-2.jpeg",
-  },
-  {
-    title: ["BACK TO", "THE ROOTS"],
-    location: "NAISHOLA GARDENS",
-    date: "Aug 1, 2026",
-    time: "12:00 PM - 1:00 AM",
-    image: "/slide-3.webp",
-  },
-];
+import useEvents from "../hooks/useEvents";
 
 const Hero = () => {
+  const events = useEvents();
   const [slideKey, setSlideKey] = useState(0);
 
   return (
@@ -53,71 +31,79 @@ const Hero = () => {
         }}
         className="h-full"
       >
-        {events.map((event, index) => (
-          <SwiperSlide key={index}>
-            <div className="flex items-center h-full w-full">
-              <div
-                data-swiper-parallax="-10%"
-                style={{ backgroundImage: `url('${event.image}')` }}
-                className="absolute inset-0 bg-cover bg-center"
-              >
-                <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/40" />
-              </div>
+        {events.slice(0, 3).map((event, index) => {
+          const words = event.title.split(" ");
+          const midpoint = Math.ceil(words.length * 0.3);
 
-              <Container>
+          const firstLine = words.slice(0, midpoint).join(" ");
+          const secondLine = words.slice(midpoint).join(" ");
+
+          return (
+            <SwiperSlide key={index}>
+              <div className="flex items-center h-full w-full">
                 <div
-                  key={slideKey}
-                  className="relative z-10 max-w-5xl text-white animate-fade-in"
+                  data-swiper-parallax="-10%"
+                  style={{ backgroundImage: `url('${event.image}')` }}
+                  className="absolute inset-0 bg-cover bg-center"
                 >
-                  <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-wide">
-                    {event.title[0]}
-                    <br />
-                    {event.title[1]}
-                  </h1>
-
-                  <div className="flex flex-col gap-4 md:gap-6 mb-10 text-lg">
-                    <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt />
-                      <span>{event.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt />
-                      <span>{event.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaClock />
-                      <span>{event.time}</span>
-                    </div>
-                  </div>
-
-                  <div className="relative inline-block">
-                    <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
-
-                    <a href="#">
-                      <button
-                        className="relative bg-[#cc4324] px-8 lg:px-10 py-3 rounded-sm font-semibold shadow-lg 
-                      transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
-                      >
-                        GET TICKETS
-                      </button>
-                    </a>
-                  </div>
+                  <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/40" />
                 </div>
-              </Container>
 
-              <div className="absolute bottom-6 md:right-10 lg:right-16 xl:right-4 2xl:right-41 z-20 hidden md:flex gap-4 text-white">
-                <button className="hero-prev flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
-                  <FaChevronLeft className="group-hover:-translate-x-1 transition-transform" />
-                  <span>Prev</span>
-                </button>
-                <button className="hero-next flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
-                  <span>Next</span>
-                  <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
-                </button>
+                <Container>
+                  <div
+                    key={slideKey}
+                    className="relative z-10 max-w-5xl text-white animate-fade-in"
+                  >
+                    <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-wide">
+                      {firstLine}
+                      <br />
+                      {secondLine}
+                    </h1>
+
+                    <div className="flex flex-col gap-4 md:gap-6 mb-10 text-lg">
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt />
+                        <span>{event.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaCalendarAlt />
+                        <span>{event.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaClock />
+                        <span>{event.time}</span>
+                      </div>
+                    </div>
+
+                    <div className="relative inline-block">
+                      <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
+
+                      <a href={`/eventDetails/${event.title}`}>
+                        <button
+                          className="relative bg-[#cc4324] px-8 lg:px-10 py-3 rounded-sm font-semibold shadow-lg 
+                      transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
+                        >
+                          GET TICKETS
+                        </button>
+                      </a>
+                    </div>
+                  </div>
+                </Container>
+
+                <div className="absolute bottom-6 md:right-10 lg:right-16 xl:right-4 2xl:right-41 z-20 hidden md:flex gap-4 text-white">
+                  <button className="hero-prev flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
+                    <FaChevronLeft className="group-hover:-translate-x-1 transition-transform" />
+                    <span>Prev</span>
+                  </button>
+                  <button className="hero-next flex items-center gap-2 hover:text-[#cc4324] transition-all duration-300 text-base uppercase tracking-widest font-medium group">
+                    <span>Next</span>
+                    <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
 
       {/* Mobile*/}

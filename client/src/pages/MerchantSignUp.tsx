@@ -4,32 +4,10 @@ import Container from "../components/global/container";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
 import PhoneInput from "react-phone-number-input";
-
-const events = [
-  {
-    title: "LABDI LIVE IN CONCERT",
-    description:
-      "Step into an intimate evening of sound and story as Labdi takes the stage for her first solo show. A celebration of voice, Orutu, and living Kenyan sound— rooted in tradition, shaped by the present.",
-    image:
-      "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1920&q=80",
-  },
-  {
-    title: "JAZZ UNDER THE STARS",
-    description:
-      "Experience an unforgettable evening of smooth jazz and soulful melodies under the African sky. World-class musicians bring you a night of pure musical magic.",
-    image:
-      "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=1920&q=80",
-  },
-  {
-    title: "AFROBEATS FESTIVAL",
-    description:
-      "Dance the night away to the hottest Afrobeats sounds from across the continent. A celebration of rhythm, culture, and pure energy.",
-    image:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920&q=80",
-  },
-];
+import useEvents from "../components/hooks/useEvents";
 
 const MerchantSignUp = () => {
+  const events = useEvents();
   const [showPassword, setShowPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 

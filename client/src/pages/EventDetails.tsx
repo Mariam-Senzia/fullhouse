@@ -7,7 +7,7 @@ import {
   FaMinus,
 } from "react-icons/fa";
 import Navbar from "../components/home/Navbar";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useEvents from "../components/hooks/useEvents";
 
 const EventDetailsPage = () => {
@@ -17,6 +17,8 @@ const EventDetailsPage = () => {
   const { title } = useParams();
 
   const event = events.find((e) => e.title === title);
+
+  const navigate = useNavigate();
 
   if (!event) {
     return <div>Event not found</div>;
@@ -41,6 +43,7 @@ const EventDetailsPage = () => {
       return;
     }
 
+    navigate("/checkout");
     console.log("Proceeding to checkout...");
   };
 
@@ -52,7 +55,7 @@ const EventDetailsPage = () => {
         <div className="container mx-auto px-4 py-8 md:py-16">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
             <div className="space-y-8 flex-2">
-              <div className="rounded overflow-hidden shadow-lg aspect-4/3">
+              <div className="rounded-sm overflow-hidden shadow-lg aspect-4/3">
                 <img
                   src={event.image}
                   alt={event.title}
@@ -73,7 +76,7 @@ const EventDetailsPage = () => {
 
             <div className="space-y-6 flex-3 lg:pl-16">
               <div className="flex gap-4 items-center">
-                <div className="inline-block bg-[#cc4324] rounded p-4 text-center min-w-15">
+                <div className="inline-block bg-[#cc4324] rounded-sm p-4 text-center min-w-15">
                   <div className="text-sm font-semibold text-white">
                     {event.date}
                   </div>
@@ -113,7 +116,7 @@ const EventDetailsPage = () => {
                   <div className="absolute -bottom-1 left-0 w-20 h-1 bg-[#cc4324]"></div>
                 </h3>
 
-                <div className="bg-white border border-gray-200 rounded p-6 mt-6 hover:shadow-lg transition-all duration-300">
+                <div className="bg-white border border-gray-200 rounded-sm p-6 mt-6 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h4 className=" text-gray-900">RSVP</h4>
@@ -122,7 +125,7 @@ const EventDetailsPage = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 border border-gray-300 rounded">
+                    <div className="flex items-center gap-3 border border-gray-300 rounded-sm">
                       <button
                         onClick={handleDecrement}
                         disabled={quantity === 0}
@@ -162,27 +165,23 @@ const EventDetailsPage = () => {
                   <div className="relative inline-block lg:w-full">
                     <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-                    {/* <a href="#"> */}
                     <button
                       onClick={handleCart}
                       className="relative w-full h-full uppercase border border-[#cc4324] text-gray-600 bg-white px-16 py-3 rounded-sm font-semibold transition-all duration-300 hover:-translate-x-0.5 hover:translate-y-0.5 hover:text-[#cc4324] hover:border-red-600"
                     >
                       Add to Cart
                     </button>
-                    {/* </a> */}
                   </div>
 
                   <div className="relative inline-block lg:w-full">
                     <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-                    {/* <a href="#"> */}
                     <button
                       onClick={handleCheckout}
                       className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
                     >
                       Quick Buy
                     </button>
-                    {/* </a> */}
                   </div>
                 </div>
               </div>

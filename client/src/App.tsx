@@ -7,6 +7,7 @@ import BuyerLogin from "./pages/BuyerLogin";
 import MerchantLogin from "./pages/MerchantLogin";
 import BuyerSignUp from "./pages/BuyerSignUp";
 import MerchantSignUp from "./pages/MerchantSignUp";
+import Checkout from "./pages/Checkout";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/eventDetails/:title" element={<EventDetails />} />
           <Route path="/buyerSignUp" element={<BuyerSignUp />} />
           <Route path="/MerchantSignUp" element={<MerchantSignUp />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </BrowserRouter>
     </>

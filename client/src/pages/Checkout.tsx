@@ -133,7 +133,7 @@ const Checkout = () => {
             </div>
           </div>
 
-          <div className="relative inline-block sm:w-full">
+          <div className="relative inline-block w-full">
             <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
             <button

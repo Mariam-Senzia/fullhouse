@@ -11,6 +11,6 @@ class User(db.Model):
     phone_number = db.Column(db.String)	
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)	
 
-    all_events = db.relationship('Event', backref='user')
+    # all_events = db.relationship('Event', backref='user')
     all_bookings = db.relationship('Booking',backref='user')
     all_roles = db.relationship('Role', backref='user')

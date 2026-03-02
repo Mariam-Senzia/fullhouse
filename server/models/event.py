@@ -1,6 +1,7 @@
 from .init import db
 from datetime import datetime
 
+
 class Event(db.Model):
     __tablename__ = "events"
 
@@ -12,8 +13,9 @@ class Event(db.Model):
     event_date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
-    ticket_price = db.Column(db.Numeric(10,2), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)	
+    ticket_price = db.Column(db.Numeric(10, 2), nullable=False)
+    image_url = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
-    
-    all_events = db.relationship('Booking', backref="events")
+
+    all_events = db.relationship("Booking", backref="events")

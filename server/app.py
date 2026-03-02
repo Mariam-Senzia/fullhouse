@@ -22,6 +22,11 @@ from flask_jwt_extended import (
 import os
 from dotenv import load_dotenv
 
+import cloudinary
+from cloudinary import CloudinaryImage
+import cloudinary.uploader
+import cloudinary.api
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -241,38 +246,6 @@ api.add_resource(RefreshToken, "/api/v1/auth/refresh")
 class CategoryResource(Resource):
     """API resource for handling category-related operations."""
 
-    # def post(self):
-    #     """Handle POST requests for creating categories."""
-
-    #     try:
-    #         form_data = request.get_json()
-    #         name = form_data.get("name")
-
-    #         category = Category.query.filter_by(name = name).first()
-
-    #         if category:
-    #             return make_response(jsonify({"message": "Event category already exists"}))
-
-    #         newCatgory = Category(
-    #             name = name,
-    #             description = form_data.get("description")
-    #         )
-    #         db.session.add(newCatgory)
-    #         db.session.commit()
-
-    #         return make_response(jsonify({
-    #             "message": "Category created successfully",
-    #             "category": {
-    #                 "name": newCatgory.name,
-    #                 "description": newCatgory.description,
-    #                 "id": newCatgory.id
-    #             }
-    #         }), 200)
-
-    #     except Exception as e:
-    #         print(e)
-    #         return make_response(jsonify({"message": "Error creating category"}))
-
     def get(self):
         try:
             categories = Category.query.all()
@@ -311,27 +284,30 @@ class PublicEventsResource(Resource):
     def get(self):
         try:
             events = Event.query.all()
+            response = []
 
-            return make_response(
-                jsonify(
-                    [
-                        {
-                            "id": e.id,
-                            "title": e.title,
-                            "description": e.description,
-                            "location": e.location,
-                            "price": float(e.ticket_price),
-                            "date": e.event_date.strftime("%b %d"),
-                            "day": e.event_date.strftime("%a"),
-                            "time": f"{e.start_time.strftime('%I:%M %p')} - {e.end_time.strftime('%I:%M %p')}",
-                            "category": {
-                                "id": e.category.id if e.category else None,
-                                "name": e.category.name if e.category else None,
-                            },
-                        }
-                    ]
+            for e in events:
+                category = Category.query.get(e.category_id) if e.category_id else None
+
+                response.append(
+                    {
+                        "id": e.id,
+                        "title": e.title,
+                        "description": e.description,
+                        "location": e.location,
+                        "price": float(e.ticket_price),
+                        "date": e.event_date.strftime("%b %d"),
+                        "day": e.event_date.strftime("%a"),
+                        "time": f"{e.start_time.strftime('%I:%M %p')} - {e.end_time.strftime('%I:%M %p')}",
+                        "category": {
+                            "id": category.id,
+                            "name": category.name,
+                        },
+                        "image_url": e.image_url,
+                    }
                 )
-            )
+
+            return make_response(jsonify(response), 200)
 
         except Exception as e:
             print(e)
@@ -351,12 +327,11 @@ class EventResource(Resource):
         """Handle POST requests for creating a new event."""
 
         try:
-            form_data = request.get_json()
+            form_data = request.form
 
-            date_str = form_data.get("event_date")
-            date_obj = datetime.strptime(
-                re.sub(r"(\d{1,2})(st|nd|rd|th)", r"\1", date_str), "%d %b %Y"
-            ).date()
+            image_file = request.files.get("image")
+
+            date_obj = datetime.strptime(form_data.get("event_date"), "%Y-%m-%d").date()
 
             start_time_obj = datetime.strptime(
                 form_data.get("start_time"), "%I:%M %p"
@@ -365,6 +340,17 @@ class EventResource(Resource):
             end_time_obj = datetime.strptime(
                 form_data.get("end_time"), "%I:%M %p"
             ).time()
+
+            image_url = None
+            if image_file:
+                upload_result = cloudinary.uploader.upload(
+                    image_file, folder="events", resource_type="image"
+                )
+                image_url = upload_result.get("secure_url")
+
+            existing_event = Event.query.filter_by(title=form_data.get("title")).first()
+            if existing_event:
+                return make_response(jsonify({"message": "Event already exists"}), 400)
 
             new_event = Event(
                 title=form_data.get("title"),
@@ -375,6 +361,7 @@ class EventResource(Resource):
                 end_time=end_time_obj,
                 ticket_price=form_data.get("ticket_price"),
                 category_id=form_data.get("category_id"),
+                image_url=image_url,
             )
 
             db.session.add(new_event)
@@ -393,18 +380,8 @@ class EventResource(Resource):
                             "date": new_event.event_date.strftime("%b %d"),
                             "day": new_event.event_date.strftime("%a"),
                             "time": f"{new_event.start_time.strftime('%I:%M %p')} - {new_event.end_time.strftime('%I:%M %p')}",
-                            "category": {
-                                "id": (
-                                    new_event.category.id
-                                    if new_event.category
-                                    else None
-                                ),
-                                "name": (
-                                    new_event.category.name
-                                    if new_event.category
-                                    else None
-                                ),
-                            },
+                            "category_id": new_event.category_id,
+                            "image_url": new_event.image_url,
                         },
                     }
                 ),

@@ -296,6 +296,7 @@ class PublicEventsResource(Resource):
                         "description": e.description,
                         "location": e.location,
                         "price": float(e.ticket_price),
+                        "price": "{:,.0f}".format(e.ticket_price),
                         "date": e.event_date.strftime("%b %d"),
                         "day": e.event_date.strftime("%a"),
                         "time": f"{e.start_time.strftime('%I:%M %p')} - {e.end_time.strftime('%I:%M %p')}",
@@ -376,7 +377,7 @@ class EventResource(Resource):
                             "title": new_event.title,
                             "description": new_event.description,
                             "location": new_event.location,
-                            "price": float(new_event.ticket_price),
+                            "price": "{:,.0f}".format(new_event.ticket_price),
                             "date": new_event.event_date.strftime("%b %d"),
                             "day": new_event.event_date.strftime("%a"),
                             "time": f"{new_event.start_time.strftime('%I:%M %p')} - {new_event.end_time.strftime('%I:%M %p')}",
@@ -488,18 +489,18 @@ class EventResource(Resource):
             print(e)
             return make_response(jsonify({"message": "Error updating event"}), 404)
 
-    @jwt_required()
+    # @jwt_required()
     def delete(self, id):
-        """Handle DELETE requests for updating an event."""
+        """Handle DELETE requests for deleting an event."""
 
         try:
-            user_id = int(get_jwt_identity())
-            event = Event.query.filter_by(id=id, user_id=user_id).first()
+            # user_id = int(get_jwt_identity())
+            # event = Event.query.filter_by(id=id, user_id=user_id).first()
+
+            event = Event.query.filter_by(id=id).first()
 
             if not event:
-                return make_response(
-                    jsonify({"message": "Event not found or not yours"}), 404
-                )
+                return make_response(jsonify({"message": "Event not found"}), 404)
 
             db.session.delete(event)
             db.session.commit()

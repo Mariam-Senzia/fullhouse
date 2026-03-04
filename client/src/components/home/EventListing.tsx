@@ -1,16 +1,21 @@
 import { FaCalendar, FaChevronDown } from "react-icons/fa6";
 import Container from "../global/container";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useStore from "../../store/useStore";
+import EventCardSkeleton from "../skeletons/EventCardSkeleton";
 
 const EventListing = () => {
   const { events, setEvents } = useStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/v1/publicEvents")
       .then((resp) => resp.json())
-      .then((data) => setEvents(data))
+      .then((data) => {
+        setEvents(data);
+        setIsLoading(false);
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -76,63 +81,68 @@ const EventListing = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
-            {/* {events.slice(3).map((event) => ( */}
-            {events.map((event) => (
-              <a href={`/eventDetails/${event.title}`} key={event.id}>
-                <div className="group bg-white rounded-sm overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
-                  <div className="relative h-64 md:h-72 overflow-hidden">
-                    <img
-                      src={event.image_url}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 left-4 bg-white rounded-sm shadow-sm overflow-hidden group-hover:hidden">
-                      <div className="bg-[#cc4324] text-white text-center px-3 py-1">
-                        <span className="text-xs font-semibold uppercase">
-                          {event.day}
-                        </span>
-                      </div>
-                      <div className="px-3 py-2 text-center">
-                        <div className="text-2xl font-bold text-gray-900">
-                          {event.date.split(" ")[1]}
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <EventCardSkeleton key={i} />
+                )) /* {events.slice(3).map((event) => ( */
+              : events.map((event) => (
+                  <a href={`/eventDetails/${event.title}`} key={event.id}>
+                    <div className="group bg-white rounded-sm overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                      <div className="relative h-64 md:h-72 overflow-hidden">
+                        <img
+                          src={event.image_url}
+                          alt={event.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 left-4 bg-white rounded-sm shadow-sm overflow-hidden group-hover:hidden">
+                          <div className="bg-[#cc4324] text-white text-center px-3 py-1">
+                            <span className="text-xs font-semibold uppercase">
+                              {event.day}
+                            </span>
+                          </div>
+                          <div className="px-3 py-2 text-center">
+                            <div className="text-2xl font-bold text-gray-900">
+                              {event.date.split(" ")[1]}
+                            </div>
+                            <div className="text-xs text-gray-600 uppercase">
+                              {event.date.split(" ")[0]}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-600 uppercase">
-                          {event.date.split(" ")[0]}
+                      </div>
+
+                      <div className="px-5 py-3">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-[#cc4324] transition-colors">
+                          {event.title}
+                        </h3>
+
+                        <div className="flex flex-col gap-2 mb-3 text-sm text-gray-700">
+                          <div className="flex items-center gap-2">
+                            <FaCalendar className="text-gray-400" />
+                            <span className="text-gray-500">{event.date}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <FaMapMarkerAlt className="text-gray-400" />
+                            <span className="text-gray-500">
+                              {event.location}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase">
+                              From
+                            </span>
+                            <p className="text-lg font-bold text-gray-900">
+                              {event.price}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="p-5">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-[#cc4324] transition-colors">
-                      {event.title}
-                    </h3>
-
-                    <div className="flex flex-col gap-2 mb-4 text-sm text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <FaCalendar className="text-gray-400" />
-                        <span className="text-gray-500">{event.date}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-gray-400" />
-                        <span className="text-gray-500">{event.location}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div>
-                        <span className="text-xs text-gray-500 uppercase">
-                          From
-                        </span>
-                        <p className="text-lg font-bold text-gray-900">
-                          {event.price}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            ))}
+                  </a>
+                ))}
           </div>
 
           <div className="flex justify-center my-12">

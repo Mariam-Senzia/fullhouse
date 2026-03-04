@@ -5,10 +5,14 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { useState } from "react";
 import Container from "../global/container";
 import useEvents from "../hooks/useEvents";
+import useStore from "../../store/useStore";
 
 const Hero = () => {
-  const events = useEvents();
+  const hookEvents = useEvents();
+  const { events } = useStore();
   const [slideKey, setSlideKey] = useState(0);
+
+  const displayEvents = events.length ? events : hookEvents;
 
   return (
     <div className="relative h-[85vh] lg:h-[80vh] w-full">
@@ -31,7 +35,7 @@ const Hero = () => {
         }}
         className="h-full"
       >
-        {events.slice(0, 3).map((event, index) => {
+        {displayEvents.slice(0, 3).map((event, index) => {
           const words = event.title.split(" ");
           const midpoint = Math.ceil(words.length * 0.3);
 
@@ -43,7 +47,7 @@ const Hero = () => {
               <div className="flex items-center h-full w-full">
                 <div
                   data-swiper-parallax="-10%"
-                  style={{ backgroundImage: `url('${event.image}')` }}
+                  style={{ backgroundImage: `url('${event.image_url}')` }}
                   className="absolute inset-0 bg-cover bg-center"
                 >
                   <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/40" />

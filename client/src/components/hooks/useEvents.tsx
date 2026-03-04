@@ -3,14 +3,12 @@ const useEvents = () => {
     {
       id: 1,
       title: "Brunch Sing Along",
-      subtitle: "Valentines Special",
-      image: "/slide-1.jpg",
+      image_url: "/slide-1.jpg",
       location: "Carnivore Grounds",
       date: "Feb 14",
       day: "Sat",
       price: "KES 3,000",
       category: "Music",
-
       dateRange: "Sat, Feb 14, 2026",
       time: "12:00 PM - 1:00 AM",
       description:
@@ -25,8 +23,7 @@ const useEvents = () => {
     {
       id: 2,
       title: "Shincity Showman",
-      subtitle: "Live Festival Experience",
-      image: "/slide-2.jpeg",
+      image_url: "/slide-2.jpeg",
       location: "Ngong Racecourse",
       date: "Apr 4",
       day: "Sat",
@@ -47,8 +44,7 @@ const useEvents = () => {
     {
       id: 3,
       title: "Back To The Roots",
-      subtitle: "Cultural Music Festival",
-      image: "/slide-3.webp",
+      image_url: "/slide-3.webp",
       location: "Naishola Gardens",
       date: "Aug 1",
       day: "Sat",
@@ -69,8 +65,7 @@ const useEvents = () => {
     {
       id: 4,
       title: "Jazz Night Live",
-      subtitle: "Evening Concert",
-      image:
+      image_url:
         "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/jazz-night-flyer-template-design-de270da6f93bb0d4cab657f9572a765f_screen.jpg?ts=1636991643",
       location: "Alliance Française",
       date: "Jan 10",
@@ -92,8 +87,7 @@ const useEvents = () => {
     {
       id: 5,
       title: "Kunye",
-      subtitle: "Sound Healing Journey",
-      image:
+      image_url:
         "https://egotickets-core-cdn.s3.eu-north-1.amazonaws.com/production/uploads/event/banner_photo/51436/mobile_33a7939eb00df892.jpg",
       location: "Nairobi",
       date: "Feb 01",
@@ -116,8 +110,7 @@ const useEvents = () => {
     {
       id: 6,
       title: "Startup Pitch Night",
-      subtitle: "Networking Event",
-      image:
+      image_url:
         "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80",
       location: "iHub Nairobi",
       date: "Jan 15",
@@ -140,7 +133,6 @@ const useEvents = () => {
     {
       id: 7,
       title: "Mombasa Rooftop Cinema",
-      subtitle: "Movie Under The Stars",
       image:
         "https://img.freepik.com/premium-psd/tropic-beach-party-event-flyer-design_802174-300.jpg",
       location: "City Mall Nyali",
@@ -164,7 +156,6 @@ const useEvents = () => {
     {
       id: 8,
       title: "Mindfulness Retreat",
-      subtitle: "Weekend Getaway",
       image:
         "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80",
       location: "Naivasha",
@@ -188,7 +179,6 @@ const useEvents = () => {
     {
       id: 9,
       title: "How to Build a Library",
-      subtitle: "Educational Workshop",
       image:
         "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80",
       location: "KICC Grounds",

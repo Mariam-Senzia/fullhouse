@@ -21,6 +21,7 @@ from flask_jwt_extended import (
 )
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 import cloudinary
 from cloudinary import CloudinaryImage
@@ -39,6 +40,7 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1)
 
 db.init_app(app)
 migrate = Migrate(app, db)
+CORS(app)
 api = Api(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)

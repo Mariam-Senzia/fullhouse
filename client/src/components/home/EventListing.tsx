@@ -1,28 +1,11 @@
 import { FaCalendar, FaChevronDown } from "react-icons/fa6";
 import Container from "../global/container";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import useEvents from "../hooks/useEvents";
-import { useEffect, useState } from "react";
-
-type Event = {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  day: string;
-  time: string;
-  location: string;
-  price: string;
-  image_url: string;
-  category: {
-    id: number;
-    name: string;
-  };
-};
+import { useEffect } from "react";
+import useStore from "../../store/useStore";
 
 const EventListing = () => {
-  // const events = useEvents();
-  const [events, setEvents] = useState<Event[]>([]);
+  const { events, setEvents } = useStore();
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/v1/publicEvents")

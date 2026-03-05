@@ -4,10 +4,12 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import useStore from "../../store/useStore";
 import EventCardSkeleton from "../skeletons/EventCardSkeleton";
+import type { Category } from "../global/types/CategoryType";
 
 const EventListing = () => {
   const { events, setEvents } = useStore();
   const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/v1/publicEvents")
@@ -16,6 +18,13 @@ const EventListing = () => {
         setEvents(data);
         setIsLoading(false);
       })
+      .catch((err) => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/v1/categories")
+      .then((resp) => resp.json())
+      .then((cat) => setCategories(cat))
       .catch((err) => console.log(err));
   }, []);
 
@@ -36,14 +45,10 @@ const EventListing = () => {
               </label>
               <div className="relative pt-1">
                 <select className="w-full px-4 py-3 border border-gray-300 rounded-sm appearance-none focus:outline-none cursor-pointer">
-                  <option value="all" className="text-white">
-                    All Events
-                  </option>
-                  <option value="music">Music</option>
-                  <option value="business">Business</option>
-                  <option value="wellness">Wellness</option>
-                  <option value="entertainment">Entertainment</option>
-                  <option value="education">Education</option>
+                  <option value="all">All Events</option>
+                  {categories.map((item) => (
+                    <option value={item.name}>{item.name}</option>
+                  ))}
                 </select>
                 <FaChevronDown className="absolute text-sm right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               </div>

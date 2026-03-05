@@ -3,18 +3,29 @@ from models.category import Category
 from app import app
 
 categories = [
-  {"name": "Music", "description": "Music events"},
-  {"name": "Business", "description": "Business and networking events"},
-  {"name": "Wellness", "description": "Health and wellness events"},
-  {"name": "Entertainment", "description": "Entertainment and fun events"},
-  {"name": "Education", "description": "Educational events"}
+    {"name": "Music & Concerts", "description": "Live music and concert events"},
+    {
+        "name": "Business & Networking",
+        "description": "Conferences, seminars and networking events",
+    },
+    {
+        "name": "Arts & Culture",
+        "description": "Theatre, exhibitions and cultural events",
+    },
+    {"name": "Sports & Fitness", "description": "Sports, marathons and fitness events"},
+    {"name": "Food & Drink", "description": "Tastings, pop-ups and dining experiences"},
+    {"name": "Education & Workshops", "description": "Workshops, courses and talks"},
+    {"name": "Free Events", "description": "Events that are free to attend"},
 ]
 
 with app.app_context():
-  for cat in categories:
-    existing = Category.query.filter_by(name=cat["name"]).first()
-    if not existing:
-      new_cat = Category(name=cat["name"], description=cat["description"])
-      db.session.add(new_cat)
-  db.session.commit()
-  print("Categories seeded successfully!")
+    Category.query.delete()
+    db.session.commit()
+    print("Categories cleared!")
+
+    for cat in categories:
+        new_cat = Category(name=cat["name"], description=cat["description"])
+        db.session.add(new_cat)
+
+    db.session.commit()
+    print("Categories seeded successfully!")

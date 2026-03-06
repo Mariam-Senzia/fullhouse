@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
   FaUser,
@@ -10,6 +10,9 @@ import Navbar from "../components/home/Navbar";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { subtotal } = location.state;
 
   const handlePhoneInput = () => {
     console.log("phone");
@@ -39,7 +42,7 @@ const Checkout = () => {
                 Order Total
               </p>
               <p className="text-2xl font-bold text-gray-900 mt-0.5">
-                KES 3,000
+                KES {subtotal.toLocaleString()}
               </p>
             </div>
             <Link

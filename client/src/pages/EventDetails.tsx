@@ -49,8 +49,9 @@ const EventDetailsPage = () => {
       return;
     }
 
-    navigate("/checkout");
-    console.log("Proceeding to checkout...");
+    navigate("/checkout", {
+      state: { subtotal },
+    });
   };
 
   return (

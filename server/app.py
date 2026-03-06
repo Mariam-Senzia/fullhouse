@@ -523,13 +523,15 @@ api.add_resource(EventResource, "/api/v1/events", "/api/v1/event/<int:id>")
 class EventDetailResource(Resource):
     """API resource for handling event detail operations."""
 
-    @jwt_required()
+    # @jwt_required()
     def get(self, id):
         """Handle POST requests for getting an event detail."""
 
         try:
-            user_id = int(get_jwt_identity())
-            event = Event.query.filter_by(id=id, user_id=user_id).first()
+            # user_id = int(get_jwt_identity())
+            # event = Event.query.filter_by(id=id, user_id=user_id).first()
+
+            event = Event.query.filter_by(id=id).first()
 
             if not event:
                 return make_response(
@@ -539,16 +541,17 @@ class EventDetailResource(Resource):
             return make_response(
                 jsonify(
                     {
-                        "user_id": event.user_id,
-                        "category_id": event.category_id,
-                        "name": event.name,
+                        "id": event.id,
+                        "title": event.title,
                         "description": event.description,
-                        "latitude": event.latitude,
-                        "longitude": event.longitude,
-                        "event_date": event.event_date.strftime("%d-%b-%Y"),
-                        "start_time": event.start_time.strftime("%H:%M"),
-                        "end_time": event.end_time.strftime("%H:%M"),
-                        "ticket_price": event.ticket_price,
+                        "location": event.location,
+                        "price": "{:,.0f}".format(event.ticket_price),
+                        "full_date": event.event_date.isoformat(),
+                        "date": event.event_date.strftime("%b %d"),
+                        "day": event.event_date.strftime("%a"),
+                        "time": f"{event.start_time.strftime('%I:%M %p')} - {event.end_time.strftime('%I:%M %p')}",
+                        "category_id": event.category_id,
+                        "image_url": event.image_url,
                     }
                 )
             )

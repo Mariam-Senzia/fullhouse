@@ -37,7 +37,9 @@ const EventListing = () => {
     now.setHours(0, 0, 0, 0);
     let result = [...events];
 
-    if (applied.category !== "all") {
+    if (applied.category === "Free Events") {
+      result = result.filter((e) => e.price === "0");
+    } else if (applied.category !== "all") {
       result = result.filter(
         (e) =>
           e.category?.name?.toLowerCase() === applied.category.toLowerCase()

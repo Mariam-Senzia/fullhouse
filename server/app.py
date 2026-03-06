@@ -299,6 +299,7 @@ class PublicEventsResource(Resource):
                         "location": e.location,
                         "price": float(e.ticket_price),
                         "price": "{:,.0f}".format(e.ticket_price),
+                        "full_date": e.event_date.isoformat(),
                         "date": e.event_date.strftime("%b %d"),
                         "day": e.event_date.strftime("%a"),
                         "time": f"{e.start_time.strftime('%I:%M %p')} - {e.end_time.strftime('%I:%M %p')}",

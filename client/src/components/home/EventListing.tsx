@@ -1,7 +1,7 @@
 import { FaCalendar, FaChevronDown } from "react-icons/fa6";
 import Container from "../global/container";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useStore from "../../store/useStore";
 import EventCardSkeleton from "../skeletons/EventCardSkeleton";
 import type { Category } from "../global/types/CategoryType";
@@ -10,6 +10,10 @@ const EventListing = () => {
   const { events, setEvents } = useStore();
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedSort, setSelectedSort] = useState("upcoming");
+  const [applied, setApplied] = useState({ category: "all", sort: "upcoming" });
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/v1/publicEvents")
@@ -28,6 +32,81 @@ const EventListing = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  const filteredEvents = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    let result = [...events];
+
+    if (applied.category !== "all") {
+      result = result.filter(
+        (e) =>
+          e.category?.name?.toLowerCase() === applied.category.toLowerCase()
+      );
+    }
+
+    if (applied.sort === "this-weekend") {
+      const day = now.getDay();
+      const saturday = new Date(now);
+      saturday.setDate(now.getDate() + (6 - day));
+      saturday.setHours(0, 0, 0, 0);
+      const sunday = new Date(saturday);
+      sunday.setDate(saturday.getDate() + 1);
+      sunday.setHours(23, 59, 59, 999);
+
+      result = result.filter((e) => {
+        const d = new Date(e.full_date);
+        return d >= saturday && d <= sunday;
+      });
+    } else if (applied.sort === "this-week") {
+      const endOfWeek = new Date(now);
+      endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      result = result.filter((e) => {
+        const d = new Date(e.full_date);
+        return d >= now && d <= endOfWeek;
+      });
+    } else if (applied.sort === "this-month") {
+      const endOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59
+      );
+
+      result = result.filter((e) => {
+        const d = new Date(e.full_date);
+        return d >= now && d <= endOfMonth;
+      });
+    } else if (applied.sort === "next-month") {
+      const startOfNext = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const endOfNext = new Date(
+        now.getFullYear(),
+        now.getMonth() + 2,
+        0,
+        23,
+        59,
+        59
+      );
+
+      result = result.filter((e) => {
+        const d = new Date(e.full_date);
+        return d >= startOfNext && d <= endOfNext;
+      });
+    } else {
+      result = result
+        .filter((e) => new Date(e.full_date) >= now)
+        .sort(
+          (a, b) =>
+            new Date(a.full_date).getTime() - new Date(b.full_date).getTime()
+        );
+    }
+
+    return result;
+  }, [events, applied]);
+
   return (
     <>
       <div id="events">
@@ -44,10 +123,16 @@ const EventListing = () => {
                 Event Type
               </label>
               <div className="relative pt-1">
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-sm appearance-none focus:outline-none cursor-pointer">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-sm appearance-none focus:outline-none cursor-pointer"
+                >
                   <option value="all">All Events</option>
                   {categories.map((item) => (
-                    <option value={item.name}>{item.name}</option>
+                    <option value={item.name} key={item.id}>
+                      {item.name}
+                    </option>
                   ))}
                 </select>
                 <FaChevronDown className="absolute text-sm right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -59,13 +144,16 @@ const EventListing = () => {
                 Sort By
               </label>
               <div className="relative pt-1">
-                <select className=" w-full px-4 py-3 border border-gray-300 rounded-sm appearance-none focus:outline-none cursor-pointer">
+                <select
+                  value={selectedSort}
+                  onChange={(e) => setSelectedSort(e.target.value)}
+                  className=" w-full px-4 py-3 border border-gray-300 rounded-sm appearance-none focus:outline-none cursor-pointer"
+                >
                   <option value="upcoming">Upcoming</option>
-                  <option value="date-asc">Date (Earliest First)</option>
-                  <option value="date-desc">Date (Latest First)</option>
-                  <option value="price-low">Price (Low to High)</option>
-                  <option value="price-high">Price (High to Low)</option>
-                  <option value="popular">Most Popular</option>
+                  <option value="this-weekend">This Weekend</option>
+                  <option value="this-week">This Week</option>
+                  <option value="this-month">This Month</option>
+                  <option value="next-month">Next Month</option>
                 </select>
                 <FaChevronDown className="absolute text-sm right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               </div>
@@ -74,80 +162,90 @@ const EventListing = () => {
             <div className="relative inline-block lg:w-50">
               <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-              <a href="#">
-                <button
-                  className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg 
+              <button
+                onClick={() =>
+                  setApplied({ category: selectedCategory, sort: selectedSort })
+                }
+                className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg 
                 transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
-                >
-                  Filter
-                </button>
-              </a>
+              >
+                Filter
+              </button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
-            {isLoading
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <EventCardSkeleton key={i} />
-                )) /* {events.slice(3).map((event) => ( */
-              : events.map((event) => (
-                  <a href={`/eventDetails/${event.title}`} key={event.id}>
-                    <div className="group bg-white rounded-sm overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
-                      <div className="relative h-64 md:h-72 overflow-hidden">
-                        <img
-                          src={event.image_url}
-                          alt={event.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <div className="absolute top-4 left-4 bg-white rounded-sm shadow-sm overflow-hidden group-hover:hidden">
-                          <div className="bg-[#cc4324] text-white text-center px-3 py-1">
-                            <span className="text-xs font-semibold uppercase">
-                              {event.day}
-                            </span>
-                          </div>
-                          <div className="px-3 py-2 text-center">
-                            <div className="text-2xl font-bold text-gray-900">
-                              {event.date.split(" ")[1]}
-                            </div>
-                            <div className="text-xs text-gray-600 uppercase">
-                              {event.date.split(" ")[0]}
-                            </div>
-                          </div>
+            {isLoading ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <EventCardSkeleton key={i} />
+              )) /* {events.slice(3).map((event) => ( */
+            ) : filteredEvents.length === 0 ? (
+              <div className="col-span-4 text-center py-16 text-gray-400">
+                <p className="text-lg font-medium">No events found</p>
+                <p className="text-sm mt-1">
+                  Try a different category or time range
+                </p>
+              </div>
+            ) : (
+              filteredEvents.map((event) => (
+                <a href={`/eventDetails/${event.title}`} key={event.id}>
+                  <div className="group bg-white rounded-sm overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                    <div className="relative h-64 md:h-72 overflow-hidden">
+                      <img
+                        src={event.image_url}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4 bg-white rounded-sm shadow-sm overflow-hidden group-hover:hidden">
+                        <div className="bg-[#cc4324] text-white text-center px-3 py-1">
+                          <span className="text-xs font-semibold uppercase">
+                            {event.day}
+                          </span>
                         </div>
-                      </div>
-
-                      <div className="px-5 py-3">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-[#cc4324] transition-colors">
-                          {event.title}
-                        </h3>
-
-                        <div className="flex flex-col gap-2 mb-3 text-sm text-gray-700">
-                          <div className="flex items-center gap-2">
-                            <FaCalendar className="text-gray-400" />
-                            <span className="text-gray-500">{event.date}</span>
+                        <div className="px-3 py-2 text-center">
+                          <div className="text-2xl font-bold text-gray-900">
+                            {event.date.split(" ")[1]}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <FaMapMarkerAlt className="text-gray-400" />
-                            <span className="text-gray-500">
-                              {event.location}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                          <div>
-                            <span className="text-xs text-gray-500 uppercase">
-                              From
-                            </span>
-                            <p className="text-lg font-bold text-gray-900">
-                              {event.price}
-                            </p>
+                          <div className="text-xs text-gray-600 uppercase">
+                            {event.date.split(" ")[0]}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </a>
-                ))}
+
+                    <div className="px-5 py-3">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-[#cc4324] transition-colors">
+                        {event.title}
+                      </h3>
+
+                      <div className="flex flex-col gap-2 mb-3 text-sm text-gray-700">
+                        <div className="flex items-center gap-2">
+                          <FaCalendar className="text-gray-400" />
+                          <span className="text-gray-500">{event.date}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <FaMapMarkerAlt className="text-gray-400" />
+                          <span className="text-gray-500">
+                            {event.location}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <div>
+                          <span className="text-xs text-gray-500 uppercase">
+                            From
+                          </span>
+                          <p className="text-lg font-bold text-gray-900">
+                            {event.price}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              ))
+            )}
           </div>
 
           <div className="flex justify-center my-12">

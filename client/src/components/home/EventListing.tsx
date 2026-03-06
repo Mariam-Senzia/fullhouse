@@ -190,7 +190,7 @@ const EventListing = () => {
               </div>
             ) : (
               filteredEvents.map((event) => (
-                <a href={`/eventDetails/${event.title}`} key={event.id}>
+                <a href={`/eventDetails/${event.id}`} key={event.id}>
                   <div className="group bg-white rounded-sm overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
                     <div className="relative h-64 md:h-72 overflow-hidden">
                       <img

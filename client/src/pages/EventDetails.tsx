@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -8,25 +8,31 @@ import {
 } from "react-icons/fa";
 import Navbar from "../components/home/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import useEvents from "../components/hooks/useEvents";
+import type { Event } from "../components/global/types/EventType";
 
 const EventDetailsPage = () => {
-  const events = useEvents();
+  const [event, setEvent] = useState<Event | null>(null);
   const [quantity, setQuantity] = useState(0);
 
-  const { title } = useParams();
-
-  const event = events.find((e) => e.title === title);
+  const { id } = useParams();
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    fetch(`http://127.0.0.1:5000/api/v1/eventdetail/${id}`)
+      .then((resp) => resp.json())
+      .then((data) => setEvent(data))
+      .catch((err) => console.log(err));
+  }, [id]);
+
   if (!event) {
-    return <div>Event not found</div>;
+    return <div>Loading event...</div>;
   }
 
+  const numericPrice = parseFloat(event.price.replace(/,/g, ""));
   const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () => setQuantity((prev) => Math.max(0, prev - 1));
-  const subtotal = quantity * event.ticket.price;
+  const subtotal = quantity * numericPrice;
 
   const handleCart = () => {
     if (quantity === 0) {
@@ -57,7 +63,7 @@ const EventDetailsPage = () => {
             <div className="space-y-8 flex-2">
               <div className="rounded-sm overflow-hidden shadow-lg aspect-4/3">
                 <img
-                  src={event.image}
+                  src={event.image_url}
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
@@ -76,15 +82,16 @@ const EventDetailsPage = () => {
 
             <div className="space-y-6 flex-3 lg:pl-16">
               <div className="flex gap-4 items-center">
-                <div className="inline-block bg-[#cc4324] rounded-sm p-4 text-center min-w-15">
-                  <div className="text-sm font-semibold text-white">
-                    {event.date}
-                  </div>
-                  <div className="text-xl font-bold text-white">
+                <div className="inline-block border border-gray-300 bg-white rounded-sm p-4 text-center min-w-15">
+                  <div className="text-sm text-[#cc4324] font-semibold ">
                     {event.day}
                   </div>
-                  <div className="text-sm font-medium text-white">
-                    {/* {event.} */}
+                  <div className="text-xl font-bold ">
+                    {event.date.split(" ")[1]}
+                  </div>
+                  <div className="text-sm font-semibold ">
+                    {" "}
+                    {event.date.split(" ")[0]}
                   </div>
                 </div>
 
@@ -102,7 +109,14 @@ const EventDetailsPage = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <FaCalendarAlt className="text-gray-400 shrink-0" />
-                  <span>{event.dateRange}</span>
+                  <span>
+                    {new Date(event.full_date).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FaClock className="text-gray-400 shrink-0" />
@@ -116,12 +130,12 @@ const EventDetailsPage = () => {
                   <div className="absolute -bottom-1 left-0 w-20 h-1 bg-[#cc4324]"></div>
                 </h3>
 
-                <div className="bg-white border border-gray-200 rounded-sm p-6 mt-6 hover:shadow-lg transition-all duration-300">
+                <div className="bg-white border border-gray-300 rounded-sm p-6 mt-6 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h4 className=" text-gray-900">RSVP</h4>
                       <p className="text-2xl font-bold text-gray-900 mt-1">
-                        KES. {event.ticket.price.toLocaleString()}
+                        KES. {numericPrice.toLocaleString()}
                       </p>
                     </div>
 
@@ -146,10 +160,14 @@ const EventDetailsPage = () => {
                   </div>
 
                   <div className="text-sm text-gray-600 space-y-1">
-                    <p className="font-medium">Valid from</p>
+                    <p className="font-medium">Valid on</p>
                     <p>
-                      {event.ticket.validFrom} / Starts at{" "}
-                      {event.ticket.startTime}
+                      {new Date(event.full_date).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </p>
                   </div>
                 </div>

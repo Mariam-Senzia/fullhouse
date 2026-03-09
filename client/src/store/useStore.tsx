@@ -6,10 +6,12 @@ import { persist } from "zustand/middleware";
 interface EventStore {
   events: Event[];
   setEvents: (events: Event[]) => void;
+
   cartItems: Cart[];
   addToCart: (item: Cart) => void;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  updateQuantity: (eventId: number, quantity: number) => void;
 }
 
 const useStore = create<EventStore>()(
@@ -43,6 +45,15 @@ const useStore = create<EventStore>()(
 
       isCartOpen: false,
       setIsCartOpen: (open) => set({ isCartOpen: open }),
+
+      updateQuantity: (eventId, quantity) =>
+        set((state) => ({
+          cartItems: state.cartItems.map((c) =>
+            c.eventId === eventId
+              ? { ...c, quantity, subtotal: quantity * c.price }
+              : c
+          ),
+        })),
     }),
     {
       name: "cart-storage",

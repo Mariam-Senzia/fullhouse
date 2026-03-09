@@ -9,13 +9,13 @@ import {
 import Navbar from "../components/home/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Event } from "../components/global/types/EventType";
+import useStore from "../store/useStore";
 
 const EventDetailsPage = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [quantity, setQuantity] = useState(0);
-
+  const { addToCart, setIsCartOpen } = useStore();
   const { id } = useParams();
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,8 +39,17 @@ const EventDetailsPage = () => {
       alert("Please select at least one ticket before proceeding.");
       return;
     }
-
-    console.log("Proceeding to cart...");
+    addToCart({
+      eventId: event.id,
+      title: event.title,
+      price: numericPrice,
+      quantity: quantity,
+      subtotal: subtotal,
+      image_url: event.image_url,
+      date: event.date,
+    });
+    setIsCartOpen(true);
+    setTimeout(() => setIsCartOpen(false), 3000);
   };
 
   const handleCheckout = () => {

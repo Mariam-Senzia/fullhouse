@@ -10,14 +10,13 @@ import Search from "./Search";
 import { useEffect, useRef, useState } from "react";
 import Container from "../global/container";
 import CartDrawer from "./CartDrawer";
+import useStore from "../../store/useStore";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loginMenu, setLoginMenu] = useState(false);
-
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
   const desktopMenuRef = useRef<HTMLDivElement | null>(null);
+  const { cartItems, isCartOpen, setIsCartOpen } = useStore();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -112,7 +111,7 @@ const Navbar = () => {
               >
                 <FaCartShopping className="text-gray-700 text-lg" />
                 <span className="absolute -right-0.5 md:-right-1 bg-[#cc4324] rounded-full text-white text-sm h-4.5 w-4.5 flex items-center justify-center font-semibold">
-                  0
+                  {cartItems.length}
                 </span>
               </button>
 

@@ -12,6 +12,7 @@ interface EventStore {
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   updateQuantity: (eventId: number, quantity: number) => void;
+  removeFromCart: (eventId: number) => void;
 }
 
 const useStore = create<EventStore>()(
@@ -53,6 +54,11 @@ const useStore = create<EventStore>()(
               ? { ...c, quantity, subtotal: quantity * c.price }
               : c
           ),
+        })),
+
+      removeFromCart: (eventId) =>
+        set((state) => ({
+          cartItems: state.cartItems.filter((c) => c.eventId !== eventId),
         })),
     }),
     {

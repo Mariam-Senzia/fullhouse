@@ -14,7 +14,8 @@ type CartDrawerProps = {
 };
 
 const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
-  const { cartItems, updateQuantity, setIsCartOpen } = useStore();
+  const { cartItems, updateQuantity, setIsCartOpen, removeFromCart } =
+    useStore();
   const total = cartItems
     .reduce((acc, item) => acc + item.subtotal, 0)
     .toLocaleString();
@@ -29,6 +30,9 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 
   return (
     <>
+      {open && (
+        <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
+      )}
       <div
         className={`fixed top-0 right-0 h-full w-md bg-white z-50 shadow-lg
         transform transition-transform duration-300
@@ -68,7 +72,10 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
                         <h3 className="font-semibold text-gray-900 text-sm">
                           {item.title}
                         </h3>
-                        <button className="text-gray-400 hover:text-[#cc4324] transition-colors">
+                        <button
+                          onClick={() => removeFromCart(item.eventId)}
+                          className="text-gray-400 hover:text-[#cc4324] transition-colors"
+                        >
                           <FaTrash className="text-sm" />
                         </button>
                       </div>

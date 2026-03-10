@@ -123,7 +123,21 @@ const Navbar = () => {
 
             {/* mobile */}
             <div className="block md:hidden">
-              <div className="block md:hidden">
+              <div className="block flex gap-3 md:hidden">
+                <button
+                  className="relative flex items-center justify-center pr-5"
+                  onClick={() => setIsCartOpen(true)}
+                >
+                  <FaCartShopping className="text-gray-700 text-lg" />
+                  <span className="absolute -right-0.5 md:-right-1 bg-[#cc4324] rounded-full text-white text-sm h-4.5 w-4.5 flex items-center justify-center font-semibold">
+                    {cartItems.length}
+                  </span>
+                </button>
+
+                <CartDrawer
+                  open={isCartOpen}
+                  onClose={() => setIsCartOpen(false)}
+                />
                 <button
                   className="md:hidden p-2 rounded-lg hover:bg-gray-100"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -137,7 +151,7 @@ const Navbar = () => {
               </div>
 
               <div
-                className={`md:hidden border-t border-gray-200 fixed top-13 left-0 right-0 z-50 w-full overflow-hidden transition-all duration-300 ${
+                className={`md:hidden border-t border-gray-200 fixed top-13 left-0 right-0 z-50 w-full overflow-hidden transition-all duration-300 rounded-sm shadow-lg ${
                   isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 }`}
               >

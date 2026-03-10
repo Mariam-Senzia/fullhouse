@@ -149,7 +149,7 @@ const EventDetailsPage = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 border border-gray-300 rounded-sm">
+                    <div className="flex items-center sm:gap-3 border border-gray-300 rounded-sm">
                       <button
                         onClick={handleDecrement}
                         disabled={quantity === 0}
@@ -189,7 +189,7 @@ const EventDetailsPage = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
+                <div className="grid  sm:grid-cols-2 gap-4 mt-12">
                   <div className="relative inline-block lg:w-full">
                     <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 

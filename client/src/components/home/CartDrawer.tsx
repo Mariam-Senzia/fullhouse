@@ -34,7 +34,7 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
         <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
       )}
       <div
-        className={`fixed top-0 right-0 h-full w-md bg-white z-50 shadow-lg
+        className={`fixed top-0 right-0 h-full min-w-70 md:w-sm lg:w-md bg-white z-50 shadow-lg
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}`}
       >
@@ -46,7 +46,10 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
         </div>
 
         {cartItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-2">
+          <div
+            className="flex flex-col items-center justify-center text-gray-500 gap-2"
+            style={{ height: "calc(100% - 57px)" }}
+          >
             <FaCartShopping className="text-4xl opacity-40" />
             <p>Your cart is empty</p>
           </div>
@@ -80,8 +83,8 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
                         </button>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">{item.date}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center gap-2 border border-gray-300 rounded-sm">
+                      <div className="flex  items-center sm:justify-between mt-3 gap-5">
+                        <div className="flex items-center  sm:gap-2 border border-gray-300 rounded-sm">
                           <button
                             onClick={() =>
                               item.quantity > 1 &&
@@ -118,7 +121,7 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
                 <span className="font-semibold text-gray-700">TOTAL</span>
                 <span className="font-bold text-gray-900">KES {total}</span>
               </div>
-              <div className="relative inline-block lg:w-full">
+              <div className="relative inline-block w-full">
                 <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
                 <button

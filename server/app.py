@@ -7,6 +7,8 @@ from models.booking import Booking
 from models.role import Role
 from models.category import Category
 from models.trigger import Trigger
+from models.payment import Payment
+from models.webhook import Webhook
 
 # from models.payment import Payment
 from flask_restful import Api, Resource

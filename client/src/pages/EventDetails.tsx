@@ -59,7 +59,7 @@ const EventDetailsPage = () => {
     }
 
     navigate("/checkout", {
-      state: { subtotal },
+      state: { subtotal, id },
     });
   };
 

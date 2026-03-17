@@ -578,29 +578,18 @@ class BookingResource(Resource):
         try:
             form_data = request.get_json()
 
-            name = form_data.get("name")
-            email = form_data.get("email")
-            phone_number = form_data.get("phone number")
-
-            existing_user = User.query.filter_by(email=email).first()
-
-            if existing_user:
-                user_id = existing_user.id
-            else:
-                new_user = User(name=name, email=email, phone_number=phone_number)
-                db.session.add(new_user)
-                db.session.commit()
-
-                user_id = new_user.id
-
             event_id = form_data.get("event_id")
+
             existing_event = Event.query.filter_by(id=event_id).first()
+            if not existing_event:
+                return make_response(jsonify({"message": "Event not found"}), 404)
 
             new_booking = Booking(
-                event_id=form_data.get("event_id"),
-                user_id=user_id,
-                tickets_quantity=form_data.get("tickets_quantity"),
-                event_price=existing_event.ticket_price,
+                full_name=form_data.get("full_name"),
+                email=form_data.get("email"),
+                phone_number=form_data.get("phone_number"),
+                event_id=event_id,
+                total_amount=form_data.get("total_amount"),
             )
             db.session.add(new_booking)
             db.session.commit()
@@ -612,20 +601,21 @@ class BookingResource(Resource):
                         "booking": {
                             "booking_id": new_booking.id,
                             "event_id": new_booking.event_id,
-                            "user_id": new_booking.user_id,
-                            "tickets_quantity": new_booking.tickets_quantity,
-                            "event_price": new_booking.event_price,
-                            "created_at": new_booking.created_at,
-                            "checked_in": new_booking.checked_in,
-                            "checked_in_Date": new_booking.checked_in_Date,
+                            "full_name": new_booking.full_name,
+                            "email": new_booking.email,
+                            "total_amount": str(new_booking.total_amount),
+                            "status": new_booking.status,
+                            "created_at": new_booking.created_at.isoformat(),
                         },
                     }
-                )
+                ),
+                201,
             )
 
         except Exception as e:
             print(e)
-            return make_response(jsonify({"message": "Error creating booking"}))
+            db.session.rollback()
+            return make_response(jsonify({"message": "Error creating booking"}), 500)
 
     # @jwt_required()
     # def get(self, id):

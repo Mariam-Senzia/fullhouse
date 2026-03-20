@@ -654,7 +654,14 @@ class InitiatePaymentResource(Resource):
             token = get_access_token()
             if not token:
                 return make_response(jsonify({"message": "Error getting token"}), 500)
-            return make_response(jsonify({"token": token}), 200)
+
+            ipn_id = os.getenv("IPN_ID")
+
+            # ipn_id = register_ipn(token)
+            # if not ipn_id:
+            #     return make_response(jsonify({"message": "Error registering ipn"}), 500)
+
+            return make_response(jsonify({"token": token, "ipn_id": ipn_id}), 200)
         except Exception as e:
             print(e)
             return make_response(jsonify({"message": "Error initiating payment"}), 500)
@@ -678,6 +685,32 @@ def get_access_token():
         data = response.json()
         if response.status_code == 200:
             return data.get("token")
+        return None
+
+    except Exception as e:
+        print(e)
+        return None
+
+
+def register_ipn(token):
+    try:
+        url = "https://cybqa.pesapal.com/pesapalv3/api/URLSetup/RegisterIPN"
+        response = requests.post(
+            url,
+            json={
+                "url": "https://cccd-102-209-76-51.ngrok-free.app/api/v1/webhooks",
+                "ipn_notification_type": "POST",
+            },
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": f"Bearer {token}",
+            },
+        )
+
+        data = response.json()
+        if response.status_code == 200:
+            return data.get("ipn_id")
         return None
 
     except Exception as e:

@@ -25,6 +25,7 @@ from flask_jwt_extended import (
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
+import requests
 
 import cloudinary
 from cloudinary import CloudinaryImage
@@ -619,7 +620,7 @@ class BookingResource(Resource):
 
     # @jwt_required()
     # def get(self, id):
-    #     """Handle POST requests for getting bookings."""
+    #     """Handle GET requests for getting bookings."""
 
     #     try:
     #         user_id = int(get_jwt_identity())
@@ -647,7 +648,43 @@ class BookingResource(Resource):
 api.add_resource(BookingResource, "/api/v1/bookings", "/api/v1/booking/<int:id>")
 
 
-# Payment Integration
+class InitiatePaymentResource(Resource):
+    def post(self):
+        try:
+            token = get_access_token()
+            if not token:
+                return make_response(jsonify({"message": "Error getting token"}), 500)
+            return make_response(jsonify({"token": token}), 200)
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error initiating payment"}), 500)
+
+
+api.add_resource(InitiatePaymentResource, "/api/v1/payments")
+
+
+def get_access_token():
+    url = "https://cybqa.pesapal.com/pesapalv3/api/Auth/RequestToken"
+    CONSUMER_KEY = os.getenv("CONSUMER_KEY")
+    CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
+
+    try:
+        response = requests.post(
+            url,
+            json={"consumer_key": CONSUMER_KEY, "consumer_secret": CONSUMER_SECRET},
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+        )
+
+        data = response.json()
+        if response.status_code == 200:
+            return data.get("token")
+        return None
+
+    except Exception as e:
+        print(e)
+        return None
+
+
 class IPNResource(Resource):
     """API resource for handling payment webhooks."""
 

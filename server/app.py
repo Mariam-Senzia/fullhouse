@@ -595,6 +595,21 @@ class BookingResource(Resource):
             db.session.add(new_booking)
             db.session.commit()
 
+            token = get_access_token()
+            if not token:
+                return make_response(jsonify({"message": "Error getting token"}), 500)
+
+            ipn_id = os.getenv("IPN_ID")
+            # ipn_id = register_ipn(token)
+            # if not ipn_id:
+            #     return make_response(jsonify({"message": "Error registering ipn"}), 500)
+
+            order = submit_order(token, new_booking)
+            if not order:
+                return make_response(
+                    jsonify({"message": "Error submitting order"}), 500
+                )
+
             return make_response(
                 jsonify(
                     {
@@ -608,6 +623,11 @@ class BookingResource(Resource):
                             "status": new_booking.status,
                             "created_at": new_booking.created_at.isoformat(),
                         },
+                        # "token": token,
+                        # "ipn_id": ipn_id,
+                        "redirect_url": order.get("redirect_url"),
+                        "order_tracking_id": order.get("order_tracking_id"),
+                        "merchant_reference": order.get("merchant_reference"),
                     }
                 ),
                 201,
@@ -646,28 +666,6 @@ class BookingResource(Resource):
 
 
 api.add_resource(BookingResource, "/api/v1/bookings", "/api/v1/booking/<int:id>")
-
-
-class InitiatePaymentResource(Resource):
-    def post(self):
-        try:
-            token = get_access_token()
-            if not token:
-                return make_response(jsonify({"message": "Error getting token"}), 500)
-
-            ipn_id = os.getenv("IPN_ID")
-
-            # ipn_id = register_ipn(token)
-            # if not ipn_id:
-            #     return make_response(jsonify({"message": "Error registering ipn"}), 500)
-
-            return make_response(jsonify({"token": token, "ipn_id": ipn_id}), 200)
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"message": "Error initiating payment"}), 500)
-
-
-api.add_resource(InitiatePaymentResource, "/api/v1/payments")
 
 
 def get_access_token():
@@ -711,6 +709,43 @@ def register_ipn(token):
         data = response.json()
         if response.status_code == 200:
             return data.get("ipn_id")
+        return None
+
+    except Exception as e:
+        print(e)
+        return None
+
+
+def submit_order(token, new_booking):
+    try:
+        event = Event.query.filter_by(id=new_booking.event_id).first()
+        url = "https://cybqa.pesapal.com/pesapalv3/api/Transactions/SubmitOrderRequest"
+
+        response = requests.post(
+            url,
+            json={
+                "id": f"{new_booking.id}_{int(datetime.utcnow().timestamp())}",
+                "currency": "KES",
+                "amount": float(new_booking.total_amount),
+                "description": event.title if event else "Event ticket booking",
+                "callback_url": "https://cccd-102-209-76-51.ngrok-free.app/api/v1/payments/callback",
+                "notification_id": os.getenv("IPN_ID"),
+                "billing_address": {
+                    "email_address": new_booking.email,
+                    "phone_number": new_booking.phone_number,
+                    "first_name": new_booking.full_name,
+                },
+            },
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": f"Bearer {token}",
+            },
+        )
+
+        data = response.json()
+        if response.status_code == 200:
+            return data
         return None
 
     except Exception as e:

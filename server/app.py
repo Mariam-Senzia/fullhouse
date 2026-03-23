@@ -763,26 +763,40 @@ def submit_order(token, new_booking):
         return None
 
 
-class IPNResource(Resource):
+class WebhookResource(Resource):
     """API resource for handling payment webhooks."""
 
     def post(self):
         try:
-            form_data = request.get_json()
+            data = request.get_json()
 
-            print(form_data)
+            webhook = Webhook(
+                order_tracking_id=data.get("OrderTrackingId"),
+                merchant_reference=data.get("OrderMerchantReference"),
+                order_notification_type=data.get("OrderNotificationType"),
+            )
+            db.session.add(webhook)
+            db.session.commit()
 
-            OrderTrackingId = form_data.get("OrderTrackingId")
-            hello = form_data.get("hello")
-
-            return make_response(jsonify(True), 200)
+            return make_response(
+                jsonify(
+                    {
+                        "orderNotificationType": data.get("OrderNotificationType"),
+                        "orderTrackingId": data.get("OrderTrackingId"),
+                        "orderMerchantReference": data.get("OrderMerchantReference"),
+                        "status": 200,
+                    }
+                ),
+                200,
+            )
 
         except Exception as e:
             print(e)
-            return make_response(jsonify({"message": "Error posting IPN url"}))
+            db.session.rollback()
+            return make_response(jsonify({"status": 500}), 500)
 
 
-api.add_resource(IPNResource, "/api/v1/webhook")
+api.add_resource(WebhookResource, "/api/v1/webhooks")
 
 if __name__ == "__main__":
     app.run(debug=True)

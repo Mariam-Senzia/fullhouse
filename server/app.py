@@ -770,20 +770,54 @@ class WebhookResource(Resource):
         try:
             data = request.get_json()
 
+            order_tracking_id = data.get("OrderTrackingId")
+            merchant_reference = data.get("OrderMerchantReference")
+            order_notification_type = data.get("OrderNotificationType")
+
             webhook = Webhook(
-                order_tracking_id=data.get("OrderTrackingId"),
-                merchant_reference=data.get("OrderMerchantReference"),
-                order_notification_type=data.get("OrderNotificationType"),
+                order_tracking_id=order_tracking_id,
+                merchant_reference=merchant_reference,
+                order_notification_type=order_notification_type,
             )
             db.session.add(webhook)
             db.session.commit()
 
+            token = get_access_token()
+            if token:
+                transaction = get_transaction_status(order_tracking_id, token)
+
+                booking_id = merchant_reference.split("_")[0]
+                booking = Booking.query.filter_by(id=int(booking_id)).first()
+
+                if booking:
+                    payment = Payment(
+                        booking_id=booking.id,
+                        order_tracking_id=transaction.get("order_tracking_id"),
+                        amount=transaction.get("amount"),
+                        currency=transaction.get("currency"),
+                        payment_method=transaction.get("payment_method"),
+                        payment_account=transaction.get("payment_account"),
+                        confirmation_code=transaction.get("confirmation_code"),
+                        payment_status_description=transaction.get(
+                            "payment_status_description"
+                        ),
+                        status_code=transaction.get("status_code"),
+                        callback_url=transaction.get("call_back_url"),
+                        payment_date=transaction.get("created_date"),
+                    )
+                    db.session.add(payment)
+
+                    if transaction.get("status_code") == 1:
+                        booking.status = "confirmed"
+
+                    db.session.commit()
+
             return make_response(
                 jsonify(
                     {
-                        "orderNotificationType": data.get("OrderNotificationType"),
-                        "orderTrackingId": data.get("OrderTrackingId"),
-                        "orderMerchantReference": data.get("OrderMerchantReference"),
+                        "orderNotificationType": order_notification_type,
+                        "orderTrackingId": order_tracking_id,
+                        "orderMerchantReference": merchant_reference,
                         "status": 200,
                     }
                 ),
@@ -797,6 +831,29 @@ class WebhookResource(Resource):
 
 
 api.add_resource(WebhookResource, "/api/v1/webhooks")
+
+
+def get_transaction_status(order_tracking_id, token):
+    try:
+        response = requests.get(
+            f"https://cybqa.pesapal.com/pesapalv3/api/Transactions/GetTransactionStatus?orderTrackingId={order_tracking_id}",
+            headers={
+                "Content-Type": "apllication/json",
+                "Accept": "application/json",
+                "Authorization": f"Bearer {token}",
+            },
+        )
+
+        data = response.json()
+        print(data)
+        if response.status_code == 200:
+            return data
+        return None
+
+    except Exception as e:
+        print(e)
+        return None
+
 
 if __name__ == "__main__":
     app.run(debug=True)

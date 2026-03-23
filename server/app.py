@@ -610,6 +610,16 @@ class BookingResource(Resource):
                     jsonify({"message": "Error submitting order"}), 500
                 )
 
+            trigger = Trigger(
+                booking_id=new_booking.id,
+                notification_id=os.getenv("IPN_ID"),
+                order_tracking_id=order.get("order_tracking_id"),
+                redirect_url=order.get("redirect_url"),
+                status="submitted",
+            )
+            db.session.add(trigger)
+            db.session.commit()
+
             return make_response(
                 jsonify(
                     {

@@ -604,7 +604,7 @@ class BookingResource(Resource):
             # if not ipn_id:
             #     return make_response(jsonify({"message": "Error registering ipn"}), 500)
 
-            order = submit_order(token, new_booking)
+            order = submit_order(token, new_booking, ipn_id)
             if not order:
                 return make_response(
                     jsonify({"message": "Error submitting order"}), 500
@@ -634,7 +634,7 @@ class BookingResource(Resource):
                             "created_at": new_booking.created_at.isoformat(),
                         },
                         # "token": token,
-                        # "ipn_id": ipn_id,
+                        "ipn_id": ipn_id,
                         "redirect_url": order.get("redirect_url"),
                         "order_tracking_id": order.get("order_tracking_id"),
                         "merchant_reference": order.get("merchant_reference"),
@@ -679,7 +679,7 @@ api.add_resource(BookingResource, "/api/v1/bookings", "/api/v1/booking/<int:id>"
 
 
 def get_access_token():
-    url = "https://cybqa.pesapal.com/pesapalv3/api/Auth/RequestToken"
+    url = "https://pay.pesapal.com/v3/api/Auth/RequestToken"
     CONSUMER_KEY = os.getenv("CONSUMER_KEY")
     CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
 
@@ -702,11 +702,11 @@ def get_access_token():
 
 def register_ipn(token):
     try:
-        url = "https://cybqa.pesapal.com/pesapalv3/api/URLSetup/RegisterIPN"
+        url = "https://pay.pesapal.com/v3/api/URLSetup/RegisterIPN"
         response = requests.post(
             url,
             json={
-                "url": "https://cccd-102-209-76-51.ngrok-free.app/api/v1/webhooks",
+                "url": "https://b881-102-209-76-51.ngrok-free.app/api/v1/webhooks",
                 "ipn_notification_type": "POST",
             },
             headers={
@@ -726,10 +726,10 @@ def register_ipn(token):
         return None
 
 
-def submit_order(token, new_booking):
+def submit_order(token, new_booking, ipn_id):
     try:
         event = Event.query.filter_by(id=new_booking.event_id).first()
-        url = "https://cybqa.pesapal.com/pesapalv3/api/Transactions/SubmitOrderRequest"
+        url = "https://pay.pesapal.com/v3/api/Transactions/SubmitOrderRequest"
 
         response = requests.post(
             url,
@@ -738,7 +738,8 @@ def submit_order(token, new_booking):
                 "currency": "KES",
                 "amount": float(new_booking.total_amount),
                 "description": event.title if event else "Event ticket booking",
-                "callback_url": "https://cccd-102-209-76-51.ngrok-free.app/api/v1/payments/callback",
+                "callback_url": "https://b881-102-209-76-51.ngrok-free.app/api/v1/payments/callback",
+                # "notification_id": ipn_id,
                 "notification_id": os.getenv("IPN_ID"),
                 "billing_address": {
                     "email_address": new_booking.email,
@@ -789,6 +790,13 @@ class WebhookResource(Resource):
                 booking_id = merchant_reference.split("_")[0]
                 booking = Booking.query.filter_by(id=int(booking_id)).first()
 
+                payment_date_str = transaction.get("created_date")
+                payment_date = (
+                    datetime.strptime(payment_date_str, "%Y-%m-%dT%H:%M:%S.%f")
+                    if payment_date_str
+                    else None
+                )
+
                 if booking:
                     payment = Payment(
                         booking_id=booking.id,
@@ -803,7 +811,7 @@ class WebhookResource(Resource):
                         ),
                         status_code=transaction.get("status_code"),
                         callback_url=transaction.get("call_back_url"),
-                        payment_date=transaction.get("created_date"),
+                        payment_date=payment_date,
                     )
                     db.session.add(payment)
 
@@ -818,7 +826,6 @@ class WebhookResource(Resource):
                         "orderNotificationType": order_notification_type,
                         "orderTrackingId": order_tracking_id,
                         "orderMerchantReference": merchant_reference,
-                        "status": 200,
                     }
                 ),
                 200,
@@ -836,7 +843,7 @@ api.add_resource(WebhookResource, "/api/v1/webhooks")
 def get_transaction_status(order_tracking_id, token):
     try:
         response = requests.get(
-            f"https://cybqa.pesapal.com/pesapalv3/api/Transactions/GetTransactionStatus?orderTrackingId={order_tracking_id}",
+            f"https://pay.pesapal.com/v3/api/Transactions/GetTransactionStatus?orderTrackingId={order_tracking_id}",
             headers={
                 "Content-Type": "apllication/json",
                 "Accept": "application/json",
@@ -845,7 +852,6 @@ def get_transaction_status(order_tracking_id, token):
         )
 
         data = response.json()
-        print(data)
         if response.status_code == 200:
             return data
         return None

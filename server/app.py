@@ -738,7 +738,7 @@ def submit_order(token, new_booking, ipn_id):
                 "currency": "KES",
                 "amount": float(new_booking.total_amount),
                 "description": event.title if event else "Event ticket booking",
-                "callback_url": "https://b881-102-209-76-51.ngrok-free.app/api/v1/payments/callback",
+                "callback_url": "http://localhost:5173/?payment=success",
                 # "notification_id": ipn_id,
                 "notification_id": os.getenv("IPN_ID"),
                 "billing_address": {

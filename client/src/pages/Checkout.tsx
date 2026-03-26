@@ -18,6 +18,7 @@ const Checkout = () => {
     phone_number: undefined as string | undefined,
   });
   const [errors, setErrors] = useState<any>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { subtotal, id } = location.state;
 
@@ -57,6 +58,7 @@ const Checkout = () => {
     e.preventDefault();
 
     if (validationForm()) {
+      setIsSubmitting(true);
       fetch("http://127.0.0.1:5000/api/v1/bookings", {
         method: "POST",
         headers: {
@@ -64,16 +66,15 @@ const Checkout = () => {
         },
         body: JSON.stringify({
           ...formData,
+          phone_number: formData.phone_number?.replace("+254", "0"),
           total_amount: subtotal,
           event_id: id,
         }),
       })
         .then((resp) => resp.json())
         .then((data) => {
-          console.log(data);
           if (data.message === "Event booked successfully") {
-            alert("Booking created successfully");
-            setFormData({ full_name: "", email: "", phone_number: undefined });
+            window.location.href = data.redirect_url;
           } else {
             alert(data.message);
           }
@@ -223,10 +224,13 @@ const Checkout = () => {
             </div>
 
             <div className="relative inline-block w-full">
-              <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
+              <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none " />
 
-              <button className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5">
-                Complete Payment
+              <button
+                disabled={isSubmitting}
+                className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5 disabled:opacity-80 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Processing..." : "Complete Payment"}
               </button>
             </div>
           </form>

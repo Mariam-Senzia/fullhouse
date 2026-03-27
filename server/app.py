@@ -26,6 +26,7 @@ import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 import requests
+import sib_api_v3_sdk
 
 import cloudinary
 from cloudinary import CloudinaryImage
@@ -820,6 +821,9 @@ class WebhookResource(Resource):
 
                     db.session.commit()
 
+                    event = Event.query.filter_by(id=booking.event_id).first()
+                    send_booking_confirmation_email(booking, event)
+
             return make_response(
                 jsonify(
                     {
@@ -859,6 +863,38 @@ def get_transaction_status(order_tracking_id, token):
     except Exception as e:
         print(e)
         return None
+
+
+def send_booking_confirmation_email(booking, event):
+    try:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key["api-key"] = os.getenv("BREVO_API_KEY")
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": booking.email, "name": booking.full_name}],
+            sender={"email": "mariamsenzia@gmail.com", "name": "Fullhouse"},
+            subject=f"Booking Confirmed - {event.title}",
+            html_content=f"""
+                <h2>Booking Confirmed</h2>
+                <p>Your Booking for <strong>{event.title}</strong> has been confirmed</p>
+                <p><strong>Booking Reference:</strong> #{booking.id}</p>
+                <p><strong>Date:</strong> {event.event_date}</p>
+                <p><strong>Time:</strong> {event.start_time} - {event.end_time}</p>
+                <p><strong>Location:</strong> {event.location}</p>
+                <p><strong>Amount Paid:</strong> {booking.total_amount}</p>
+                <p>See you there!</p>
+            """,
+        )
+
+        api_instance.send_transac_email(send_smtp_email)
+        print("Email sent successfully")
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 
 if __name__ == "__main__":

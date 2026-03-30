@@ -15,6 +15,7 @@ cloudinary = "*"
 flask-cors = "*"
 requests = "*"
 sib-api-v3-sdk = "*"
+qrcode = {extras = ["pil"], version = "*"}
 
 [dev-packages]
 

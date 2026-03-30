@@ -27,6 +27,9 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import requests
 import sib_api_v3_sdk
+import qrcode
+import io
+import base64
 
 import cloudinary
 from cloudinary import CloudinaryImage
@@ -849,7 +852,7 @@ def get_transaction_status(order_tracking_id, token):
         response = requests.get(
             f"https://pay.pesapal.com/v3/api/Transactions/GetTransactionStatus?orderTrackingId={order_tracking_id}",
             headers={
-                "Content-Type": "apllication/json",
+                "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": f"Bearer {token}",
             },
@@ -874,19 +877,114 @@ def send_booking_confirmation_email(booking, event):
             sib_api_v3_sdk.ApiClient(configuration)
         )
 
+        qr_code = generate_qr_code(booking.id)
+
+        event_date_formatted = event.event_date.strftime("%B %d %Y")
+        start_time_formatted = event.start_time.strftime("%I:%M %p")
+        end_time_formatted = event.end_time.strftime("%I:%M %p")
+
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=[{"email": booking.email, "name": booking.full_name}],
             sender={"email": "mariamsenzia@gmail.com", "name": "Fullhouse"},
             subject=f"Booking Confirmed - {event.title}",
             html_content=f"""
-                <h2>Booking Confirmed</h2>
-                <p>Your Booking for <strong>{event.title}</strong> has been confirmed</p>
-                <p><strong>Booking Reference:</strong> #{booking.id}</p>
-                <p><strong>Date:</strong> {event.event_date}</p>
-                <p><strong>Time:</strong> {event.start_time} - {event.end_time}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Amount Paid:</strong> {booking.total_amount}</p>
-                <p>See you there!</p>
+            <!DOCTYPE html>
+            <html>
+            <body style="margin:0; padding:0; background-color:#f4f4f4; font-family: Arial, sans-serif;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                <td align="center" style="padding: 40px 16px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;">
+
+                    <tr>
+                        <td style="background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.10); border-top:4px solid #cc4324;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+
+                            <tr>
+                            <td style="padding:20px 28px 0;">
+                                <p style="margin:0; color:#cc4324; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:700;">FULLHOUSE</p>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="padding:16px 28px 8px;">
+                                <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Event</p>
+                                <p style="margin:0; color:#111; font-size:20px; font-weight:700; line-height:1.3;">{event.title}</p>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="padding:16px 28px;">
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="50%" style="padding-bottom:20px;">
+                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Date</p>
+                                    <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{event_date_formatted}</p>
+                                    </td>
+                                    <td width="50%" style="padding-bottom:20px;">
+                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Time</p>
+                                    <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{start_time_formatted} - {end_time_formatted}</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="50%">
+                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Venue</p>
+                                    <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{event.location}</p>
+                                    </td>
+                                    <td width="50%">
+                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Amount Paid</p>
+                                    <p style="margin:0; color:#cc4324; font-size:13px; font-weight:700;">KES {booking.total_amount}</p>
+                                    </td>
+                                </tr>
+                                </table>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="padding:0 28px 24px;">
+                                <div style="background:#f9f9f9; border-radius:8px; padding:12px 16px;">
+                                <p style="margin:0 0 2px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Ticket Holder</p>
+                                <p style="margin:0; color:#111; font-size:14px; font-weight:700;">{booking.full_name}</p>
+                                </div>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="padding:0;">
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="20" style="background:#f4f4f4; border-radius:0 20px 20px 0; height:20px;"></td>
+                                    <td style="border-top:2px dashed #ddd;"></td>
+                                    <td width="20" style="background:#f4f4f4; border-radius:20px 0 0 20px; height:20px;"></td>
+                                </tr>
+                                </table>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td align="center" style="padding:28px 28px 32px;">
+                                <p style="margin:0 0 20px; color:#999; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Scan at Entrance</p>
+                                <img src="{qr_code}" width="180" height="180" alt="QR Code" style="display:block; margin:0 auto;"/>
+                            </td>
+                            </tr>
+
+                        </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding-top:20px;">
+                        <p style="margin:0; color:#999; font-size:11px;">See you there!</p>
+                        </td>
+                    </tr>
+
+                    </table>
+                </td>
+                </tr>
+            </table>
+            </body>
+            </html>
             """,
         )
 
@@ -895,6 +993,30 @@ def send_booking_confirmation_email(booking, event):
 
     except Exception as e:
         print(f"Error sending email: {e}")
+
+
+def generate_qr_code(booking_id):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(str(booking_id))
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    upload_result = cloudinary.uploader.upload(
+        buffer,
+        folder="qrcodes",
+        public_id=f"booking_{booking_id}",
+        resource_type="image",
+    )
+    return upload_result.get("secure_url")
 
 
 if __name__ == "__main__":

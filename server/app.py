@@ -653,31 +653,33 @@ class BookingResource(Resource):
             db.session.rollback()
             return make_response(jsonify({"message": "Error creating booking"}), 500)
 
-    # @jwt_required()
-    # def get(self, id):
-    #     """Handle GET requests for getting bookings."""
+    def get(self, id):
+        try:
+            booking = Booking.query.filter_by(id=id).first()
 
-    #     try:
-    #         user_id = int(get_jwt_identity())
+            if not booking:
+                return make_response(jsonify({"message": "Booking not found"}), 404)
 
-    #         bookings = Booking.query.filter_by(id = id, user_id = user_id).all()
+            event = Event.query.filter_by(id=booking.event_id).first()
 
-    #         if not bookings:
-    #             return make_response(jsonify({"message": "Booking not found or not yours"}), 404)
-
-    #         return make_response(jsonify([{
-    #             "event_id": item.event_id,
-    #             "user_id": item.user_id,
-    #             "tickets_quantity": item.tickets_quantity,
-    #             "event_price": item.event_price,
-    #             "created_at": item.created_at,
-    #             "checked_in": item.checked_in,
-    #             "checked_in_Date": item.checked_in_Date
-    #             } for item in bookings]), 200)
-
-    #     except Exception as e:
-    #         print(e)
-    #         return make_response(jsonify({"message": "Error getting booking"}))
+            return make_response(
+                jsonify(
+                    {
+                        "booking_id": booking.id,
+                        "full_name": booking.full_name,
+                        "status": booking.status,
+                        "event": {
+                            "title": event.title,
+                            "event_date": event.event_date.strftime("%B %d %Y"),
+                            "location": event.location,
+                        },
+                    }
+                ),
+                200,
+            )
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "Error getting booking"}), 500)
 
 
 api.add_resource(BookingResource, "/api/v1/bookings", "/api/v1/booking/<int:id>")
@@ -878,7 +880,6 @@ def send_booking_confirmation_email(booking, event):
             sib_api_v3_sdk.ApiClient(configuration)
         )
 
-        # qr_code = generate_qr_code(booking.id)
         qr_base64, qr_cloudinary = generate_qr_code(booking.id)
 
         event_date_formatted = event.event_date.strftime("%B %d %Y")
@@ -1007,7 +1008,7 @@ def generate_qr_code(booking_id):
         box_size=10,
         border=4,
     )
-    qr.add_data(str(booking_id))
+    qr.add_data(f"{os.getenv('FRONTEND_URL')}/checkin/{booking_id}")
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")

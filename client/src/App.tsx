@@ -8,6 +8,7 @@ import MerchantLogin from "./pages/MerchantLogin";
 import BuyerSignUp from "./pages/BuyerSignUp";
 import MerchantSignUp from "./pages/MerchantSignUp";
 import Checkout from "./pages/Checkout";
+import CheckIn from "./pages/CheckIn";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/buyerSignUp" element={<BuyerSignUp />} />
           <Route path="/MerchantSignUp" element={<MerchantSignUp />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkin/:id" element={<CheckIn />} />
         </Routes>
       </BrowserRouter>
     </>

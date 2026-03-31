@@ -30,6 +30,7 @@ import sib_api_v3_sdk
 import qrcode
 import io
 import base64
+from weasyprint import HTML
 
 import cloudinary
 from cloudinary import CloudinaryImage
@@ -877,112 +878,116 @@ def send_booking_confirmation_email(booking, event):
             sib_api_v3_sdk.ApiClient(configuration)
         )
 
-        qr_code = generate_qr_code(booking.id)
+        # qr_code = generate_qr_code(booking.id)
+        qr_base64, qr_cloudinary = generate_qr_code(booking.id)
 
         event_date_formatted = event.event_date.strftime("%B %d %Y")
         start_time_formatted = event.start_time.strftime("%I:%M %p")
         end_time_formatted = event.end_time.strftime("%I:%M %p")
 
+        pdf = generate_pdf_ticket(booking, event, qr_base64)
+        pdf_base_64 = base64.b64encode(pdf).decode("utf-8") if pdf else None
+
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=[{"email": booking.email, "name": booking.full_name}],
             sender={"email": "mariamsenzia@gmail.com", "name": "Fullhouse"},
             subject=f"Booking Confirmed - {event.title}",
+            attachment=[{"content": pdf_base_64, "name": f"ticket_{booking.id}.pdf"}],
             html_content=f"""
             <!DOCTYPE html>
             <html>
             <body style="margin:0; padding:0; background-color:#f4f4f4; font-family: Arial, sans-serif;">
-            <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                <td align="center" style="padding: 40px 16px;">
-                    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;">
-
+                <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td style="background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.10); border-top:4px solid #cc4324;">
-                        <table width="100%" cellpadding="0" cellspacing="0">
+                    <td align="center" style="padding: 40px 16px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;">
 
-                            <tr>
-                            <td style="padding:20px 28px 0;">
-                                <p style="margin:0; color:#cc4324; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:700;">FULLHOUSE</p>
-                            </td>
-                            </tr>
+                        <tr>
+                            <td style="background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.10); border-top:4px solid #cc4324;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
 
-                            <tr>
-                            <td style="padding:16px 28px 8px;">
-                                <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Event</p>
-                                <p style="margin:0; color:#111; font-size:20px; font-weight:700; line-height:1.3;">{event.title}</p>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="padding:16px 28px;">
-                                <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
-                                    <td width="50%" style="padding-bottom:20px;">
-                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Date</p>
-                                    <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{event_date_formatted}</p>
-                                    </td>
-                                    <td width="50%" style="padding-bottom:20px;">
-                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Time</p>
-                                    <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{start_time_formatted} - {end_time_formatted}</p>
-                                    </td>
+                                <td style="padding:20px 28px 0;">
+                                    <p style="margin:0; color:#cc4324; font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:700;">FULLHOUSE</p>
+                                </td>
                                 </tr>
+
                                 <tr>
-                                    <td width="50%">
-                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Venue</p>
-                                    <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{event.location}</p>
-                                    </td>
-                                    <td width="50%">
-                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Amount Paid</p>
-                                    <p style="margin:0; color:#cc4324; font-size:13px; font-weight:700;">KES {booking.total_amount}</p>
-                                    </td>
+                                <td style="padding:16px 28px 8px;">
+                                    <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Event</p>
+                                    <p style="margin:0; color:#111; font-size:20px; font-weight:700; line-height:1.3;">{event.title}</p>
+                                </td>
                                 </tr>
-                                </table>
-                            </td>
-                            </tr>
 
-                            <tr>
-                            <td style="padding:0 28px 24px;">
-                                <div style="background:#f9f9f9; border-radius:8px; padding:12px 16px;">
-                                <p style="margin:0 0 2px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Ticket Holder</p>
-                                <p style="margin:0; color:#111; font-size:14px; font-weight:700;">{booking.full_name}</p>
-                                </div>
-                            </td>
-                            </tr>
-
-                            <tr>
-                            <td style="padding:0;">
-                                <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
-                                    <td width="20" style="background:#f4f4f4; border-radius:0 20px 20px 0; height:20px;"></td>
-                                    <td style="border-top:2px dashed #ddd;"></td>
-                                    <td width="20" style="background:#f4f4f4; border-radius:20px 0 0 20px; height:20px;"></td>
+                                <td style="padding:16px 28px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td width="50%" style="padding-bottom:20px;">
+                                        <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Date</p>
+                                        <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{event_date_formatted}</p>
+                                        </td>
+                                        <td width="50%" style="padding-bottom:20px;">
+                                        <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Time</p>
+                                        <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{start_time_formatted} - {end_time_formatted}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50%">
+                                        <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Venue</p>
+                                        <p style="margin:0; color:#111; font-size:13px; font-weight:600;">{event.location}</p>
+                                        </td>
+                                        <td width="50%">
+                                        <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Amount Paid</p>
+                                        <p style="margin:0; color:#cc4324; font-size:13px; font-weight:700;">KES {booking.total_amount}</p>
+                                        </td>
+                                    </tr>
+                                    </table>
+                                </td>
                                 </tr>
-                                </table>
-                            </td>
-                            </tr>
 
-                            <tr>
-                            <td align="center" style="padding:28px 28px 32px;">
-                                <p style="margin:0 0 20px; color:#999; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Scan at Entrance</p>
-                                <img src="{qr_code}" width="180" height="180" alt="QR Code" style="display:block; margin:0 auto;"/>
+                                <tr>
+                                <td style="padding:0 28px 24px;">
+                                    <div style="background:#f9f9f9; border-radius:8px; padding:12px 16px;">
+                                    <p style="margin:0 0 2px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Ticket Holder</p>
+                                    <p style="margin:0; color:#111; font-size:14px; font-weight:700;">{booking.full_name}</p>
+                                    </div>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td style="padding:0;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td width="20" style="background:#f4f4f4; border-radius:0 20px 20px 0; height:20px;"></td>
+                                        <td style="border-top:2px dashed #ddd;"></td>
+                                        <td width="20" style="background:#f4f4f4; border-radius:20px 0 0 20px; height:20px;"></td>
+                                    </tr>
+                                    </table>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                <td align="center" style="padding:28px 28px 32px;">
+                                    <p style="margin:0 0 20px; color:#999; font-size:10px; letter-spacing:2px; text-transform:uppercase;">Scan at Entrance</p>
+                                    <img src="{qr_cloudinary}" width="180" height="180" alt="QR Code" style="display:block; margin:0 auto;"/>
+                                </td>
+                                </tr>
+
+                            </table>
                             </td>
-                            </tr>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding-top:20px;">
+                            <p style="margin:0; color:#999; font-size:11px;">See you there!</p>
+                            </td>
+                        </tr>
 
                         </table>
-                        </td>
+                    </td>
                     </tr>
-
-                    <!-- Footer -->
-                    <tr>
-                        <td align="center" style="padding-top:20px;">
-                        <p style="margin:0; color:#999; font-size:11px;">See you there!</p>
-                        </td>
-                    </tr>
-
-                    </table>
-                </td>
-                </tr>
-            </table>
+                </table>
             </body>
             </html>
             """,
@@ -1010,13 +1015,82 @@ def generate_qr_code(booking_id):
     img.save(buffer, format="PNG")
     buffer.seek(0)
 
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.seek(0)
+
     upload_result = cloudinary.uploader.upload(
         buffer,
         folder="qrcodes",
         public_id=f"booking_{booking_id}",
         resource_type="image",
     )
-    return upload_result.get("secure_url")
+
+    cloudinary_url = upload_result.get("secure_url")
+    return qr_base64, cloudinary_url
+
+
+def generate_pdf_ticket(booking, event, qr_base64):
+    event_date_formatted = event.event_date.strftime("%B %d %Y")
+    start_time_formatted = event.start_time.strftime("%I:%M %p")
+    end_time_formatted = event.end_time.strftime("%I:%M %p")
+
+    pdf_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ margin: 0; padding: 40px; background: #ffffff; font-family: Arial, sans-serif; }}
+            .ticket {{ border-top: 5px solid #cc4324; padding: 24px; max-width: 500px; margin: 0 auto; }}
+            .brand {{ color: #cc4324; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; font-weight: 700; margin-bottom: 20px; }}
+            .label {{ color: #999; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 4px; }}
+            .value {{ color: #111; font-size: 13px; font-weight: 600; margin: 0 0 16px; }}
+            .grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }}
+            .holder {{ background: #f9f9f9; padding: 12px 16px; margin: 16px 0; }}
+            .divider {{ border-top: 2px dashed #ddd; margin: 24px 0; }}
+            .qr-section {{ text-align: center; padding: 20px 0; }}
+            .scan-label {{ color: #999; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }}
+            .amount {{ color: #cc4324; font-weight: 700; }}
+            .footer {{ text-align: center; color: #999; font-size: 11px; margin-top: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="ticket">
+            <p class="brand">Fullhouse</p>
+            <p class="label">Event</p>
+            <h2 style="margin:0 0 20px; color:#111; font-size:22px;">{event.title}</h2>
+            <div class="grid">
+                <div>
+                    <p class="label">Date</p>
+                    <p class="value">{event_date_formatted}</p>
+                </div>
+                <div>
+                    <p class="label">Time</p>
+                    <p class="value">{start_time_formatted} - {end_time_formatted}</p>
+                </div>
+                <div>
+                    <p class="label">Venue</p>
+                    <p class="value">{event.location}</p>
+                </div>
+                <div>
+                    <p class="label">Amount Paid</p>
+                    <p class="value amount">KES {booking.total_amount}</p>
+                </div>
+            </div>
+            <div class="holder">
+                <p class="label">Ticket Holder</p>
+                <p style="margin:0; color:#111; font-size:14px; font-weight:700;">{booking.full_name}</p>
+            </div>
+            <div class="divider"></div>
+            <div class="qr-section">
+                <p class="scan-label">Scan at Entrance</p>
+                <img src="data:image/png;base64,{qr_base64}" width="180" height="180" alt="QR Code"/>
+            </div>
+            <p class="footer">See you there!</p>
+        </div>
+    </body>
+    </html>
+    """
+    return HTML(string=pdf_html).write_pdf()
 
 
 if __name__ == "__main__":

@@ -63,7 +63,10 @@ const useStore = create<EventStore>()(
     }),
     {
       name: "cart-storage",
-      partialize: (state) => ({ cartItems: state.cartItems }),
+      partialize: (state) => ({
+        cartItems: state.cartItems,
+        events: state.events,
+      }),
     }
   )
 );

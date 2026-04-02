@@ -82,7 +82,7 @@ const Hero = () => {
                     <div className="relative inline-block">
                       <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-                      <a href={`/eventDetails/${event.title}`}>
+                      <a href={`/eventDetails/${event.id}`}>
                         <button
                           className="relative bg-[#cc4324] px-8 lg:px-10 py-3 rounded-sm font-semibold shadow-lg 
                       transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"

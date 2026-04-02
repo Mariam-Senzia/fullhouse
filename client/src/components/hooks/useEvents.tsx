@@ -133,7 +133,7 @@ const useEvents = () => {
     {
       id: 7,
       title: "Mombasa Rooftop Cinema",
-      image:
+      image_url:
         "https://img.freepik.com/premium-psd/tropic-beach-party-event-flyer-design_802174-300.jpg",
       location: "City Mall Nyali",
       date: "Dec 17",
@@ -156,7 +156,7 @@ const useEvents = () => {
     {
       id: 8,
       title: "Mindfulness Retreat",
-      image:
+      image_url:
         "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80",
       location: "Naivasha",
       date: "Jan 03",
@@ -179,7 +179,7 @@ const useEvents = () => {
     {
       id: 9,
       title: "How to Build a Library",
-      image:
+      image_url:
         "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80",
       location: "KICC Grounds",
       date: "Dec 01",

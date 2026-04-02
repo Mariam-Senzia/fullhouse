@@ -5,14 +5,67 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
 import PhoneInput from "react-phone-number-input";
 import useEvents from "../components/hooks/useEvents";
+import useStore from "../store/useStore";
+import { useNavigate } from "react-router-dom";
 
 const BuyerSignUp = () => {
-  const events = useEvents();
   const [showPassword, setShowPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const hookEvents = useEvents();
+  const { events } = useStore();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    password: "",
+    role: "attendee",
+  });
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handlePhoneInput = () => {
-    console.log("phone");
+  const displayEvents = events.length ? events : hookEvents;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    fetch("http://127.0.0.1:5000/api/v1/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...formData,
+        phone_number: formData.phone_number?.replace("+254", "0"),
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        if (data.message === "User created successfully") {
+          setSuccessMessage(
+            "Account created successfully! Proceeding to login."
+          );
+          setFormData({
+            name: "",
+            email: "",
+            phone_number: "",
+            password: "",
+            role: "attendee",
+          });
+          setTimeout(() => {
+            navigate("/buyerLogin");
+          }, 2500);
+        } else {
+          setSuccessMessage(data.message);
+        }
+      })
+      .catch((err) => alert(err));
   };
 
   return (
@@ -27,11 +80,11 @@ const BuyerSignUp = () => {
         onSlideChange={(swiper) => setCurrentSlide(swiper.realIndex)}
         className="absolute inset-0"
       >
-        {events.map((event, index) => (
+        {displayEvents.map((event, index) => (
           <SwiperSlide key={index}>
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${event.image}')` }}
+              style={{ backgroundImage: `url('${event.image_url}')` }}
             >
               <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-black/40"></div>
             </div>
@@ -49,7 +102,7 @@ const BuyerSignUp = () => {
                     <div className="relative inline-block">
                       <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-                      <a href="#">
+                      <a href={`/eventDetails/${event.id}`}>
                         <button
                           className="relative bg-[#cc4324] px-8 lg:px-10 py-3 rounded-sm font-semibold shadow-lg 
                       transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5"
@@ -82,80 +135,107 @@ const BuyerSignUp = () => {
                         </p>
                       </div>
 
-                      <div className="space-y-4  border-gray-200 border-t py-6">
-                        <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Name
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="full name"
-                              className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Email Address
-                            </label>
-                            <input
-                              type="email"
-                              placeholder="email"
-                              className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Phone Number
-                            </label>
-                            <div className="w-full px-4 py-3 border border-gray-300 rounded focus-within:ring-1 focus-within:ring-gray-300 transition-all">
-                              <PhoneInput
-                                international
-                                defaultCountry="KE"
-                                countryCallingCodeEditable={false}
-                                placeholder="Phone number"
-                                onChange={handlePhoneInput}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Password
-                            </label>
-                            <div className="relative">
-                              <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="password"
-                                className="w-full mb-2 px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all pr-12"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                              >
-                                {showPassword ? (
-                                  <FaEyeSlash className="text-lg" />
-                                ) : (
-                                  <FaEye className="text-lg" />
-                                )}
-                              </button>
-                            </div>
-                          </div>
+                      {successMessage && (
+                        <div
+                          className={`mb-4 px-4 py-3 rounded text-sm font-medium ${
+                            successMessage.includes("successfully")
+                              ? "bg-green-50 text-green-700 border border-green-200"
+                              : "bg-red-50 text-red-700 border border-red-200"
+                          }`}
+                        >
+                          {successMessage}
                         </div>
+                      )}
 
-                        <div className="relative inline-block w-full">
-                          <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
+                      <form onSubmit={handleSubmit}>
+                        <div className="space-y-4  border-gray-200 border-t py-6">
+                          <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Name
+                              </label>
+                              <input
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                type="text"
+                                placeholder="full name"
+                                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all"
+                              />
+                            </div>
 
-                          <a href="#">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Email Address
+                              </label>
+                              <input
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                type="email"
+                                placeholder="email"
+                                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Phone Number
+                              </label>
+                              <div className="w-full px-4 py-3 border border-gray-300 rounded focus-within:ring-1 focus-within:ring-gray-300 transition-all">
+                                <PhoneInput
+                                  international
+                                  defaultCountry="KE"
+                                  countryCallingCodeEditable={false}
+                                  placeholder="Phone number"
+                                  value={formData.phone_number}
+                                  onChange={(value) => {
+                                    setFormData({
+                                      ...formData,
+                                      phone_number: value || "",
+                                    });
+                                  }}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mb-6">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Password
+                              </label>
+                              <div className="relative">
+                                <input
+                                  name="password"
+                                  value={formData.password}
+                                  onChange={handleInputChange}
+                                  type={showPassword ? "text" : "password"}
+                                  placeholder="password"
+                                  className="w-full mb-2 px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all pr-12"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                >
+                                  {showPassword ? (
+                                    <FaEyeSlash className="text-lg" />
+                                  ) : (
+                                    <FaEye className="text-lg" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="relative inline-block w-full">
+                            <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
+
                             <button className="relative w-full  text-white uppercase bg-[#cc4324] px-8 lg:px-10 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5">
                               Sign Up
                             </button>
-                          </a>
+                          </div>
                         </div>
-                      </div>
+                      </form>
 
                       {/* <div className="mt-6">
                   <p className="text-xs text-gray-500 text-center leading-relaxed">

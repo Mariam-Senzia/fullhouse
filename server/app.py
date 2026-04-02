@@ -44,8 +44,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATION"] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -147,7 +147,9 @@ class RegisterResource(Resource):
             existing_user = User.query.filter_by(email=email).first()
 
             if existing_user:
-                return make_response(jsonify({"message": "User already exists"}))
+                return make_response(jsonify({"message": "User already exists"}), 409)
+
+            role = form_data.get("role")
 
             new_user = User(
                 name=form_data.get("name"),
@@ -158,7 +160,7 @@ class RegisterResource(Resource):
             db.session.add(new_user)
             db.session.commit()
 
-            new_role = Role(user_id=new_user.id)
+            new_role = Role(user_id=new_user.id, role=role)
             db.session.add(new_role)
             db.session.commit()
 
@@ -185,7 +187,7 @@ class RegisterResource(Resource):
 
         except Exception as e:
             print(e)
-            return make_response(jsonify({"message": "Error creating user"}))
+            return make_response(jsonify({"message": "Error creating user"}), 500)
 
 
 api.add_resource(RegisterResource, "/api/v1/auth")

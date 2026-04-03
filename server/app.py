@@ -227,6 +227,7 @@ class LoginResource(Resource):
                 )
 
                 return response
+            return make_response(jsonify({"message": "Invalid email or password"}), 401)
 
         except Exception as e:
             print(e)

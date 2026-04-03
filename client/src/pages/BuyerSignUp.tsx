@@ -21,6 +21,8 @@ const BuyerSignUp = () => {
     role: "attendee",
   });
   const [successMessage, setSuccessMessage] = useState("");
+  const [errors, setErrors] = useState<any>({});
+
   const navigate = useNavigate();
 
   const displayEvents = events.length ? events : hookEvents;
@@ -30,42 +32,77 @@ const BuyerSignUp = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+
+    if (errors[e.target.name]) {
+      setErrors({});
+    }
+
+    if (successMessage) {
+      setSuccessMessage("");
+    }
+  };
+
+  const validationForm = () => {
+    const newErrors: any = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email address";
+    }
+
+    if (!formData.phone_number) {
+      newErrors.phone_number = "Phone number is required";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    fetch("http://127.0.0.1:5000/api/v1/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...formData,
-        phone_number: formData.phone_number?.replace("+254", "0"),
-      }),
-    })
-      .then((resp) => resp.json())
-      .then((data) => {
-        if (data.message === "User created successfully") {
-          setSuccessMessage(
-            "Account created successfully! Proceeding to login."
-          );
-          setFormData({
-            name: "",
-            email: "",
-            phone_number: "",
-            password: "",
-            role: "attendee",
-          });
-          setTimeout(() => {
-            navigate("/buyerLogin");
-          }, 2500);
-        } else {
-          setSuccessMessage(data.message);
-        }
+    if (validationForm()) {
+      fetch("http://127.0.0.1:5000/api/v1/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          phone_number: formData.phone_number?.replace("+254", "0"),
+        }),
       })
-      .catch((err) => alert(err));
+        .then((resp) => resp.json())
+        .then((data) => {
+          if (data.message === "User created successfully") {
+            setSuccessMessage(
+              "Account created successfully! Proceeding to login."
+            );
+            setFormData({
+              name: "",
+              email: "",
+              phone_number: "",
+              password: "",
+              role: "attendee",
+            });
+            setTimeout(() => {
+              navigate("/buyerLogin");
+            }, 2500);
+          } else {
+            setSuccessMessage(data.message);
+          }
+        })
+        .catch((err) => alert(err));
+    }
   };
 
   return (
@@ -162,6 +199,11 @@ const BuyerSignUp = () => {
                                 placeholder="full name"
                                 className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all"
                               />
+                              {errors.name && (
+                                <p className="text-[#cc4324] text-sm mt-[4px]">
+                                  {errors.name}
+                                </p>
+                              )}
                             </div>
 
                             <div>
@@ -176,6 +218,11 @@ const BuyerSignUp = () => {
                                 placeholder="email"
                                 className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-transparent transition-all"
                               />
+                              {errors.email && (
+                                <p className="text-[#cc4324] text-sm mt-[5px]">
+                                  {errors.email}
+                                </p>
+                              )}
                             </div>
 
                             <div>
@@ -194,8 +241,21 @@ const BuyerSignUp = () => {
                                       ...formData,
                                       phone_number: value || "",
                                     });
+                                    if (errors.phone_number) {
+                                      setErrors({});
+                                    }
+                                    if (successMessage) {
+                                      setSuccessMessage("");
+                                    }
                                   }}
                                 />
+                              </div>
+                              <div>
+                                {errors.phone_number && (
+                                  <p className="text-[#cc4324] text-sm mt-[2px]">
+                                    {errors.phone_number}
+                                  </p>
+                                )}
                               </div>
                             </div>
 
@@ -224,6 +284,11 @@ const BuyerSignUp = () => {
                                   )}
                                 </button>
                               </div>
+                              {errors.password && (
+                                <p className="text-[#cc4324] text-sm mt-[-5px]">
+                                  {errors.password}
+                                </p>
+                              )}
                             </div>
                           </div>
 

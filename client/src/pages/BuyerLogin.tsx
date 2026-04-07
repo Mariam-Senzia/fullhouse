@@ -18,6 +18,12 @@ const BuyerLogin = () => {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState<any>({});
+  const { setUser, setTokens, user, tokens } = useStore();
+
+  console.log({
+    access_tokens: tokens,
+    user: user,
+  });
 
   const displayEvents = events.length ? events : hookEvents;
 
@@ -61,14 +67,28 @@ const BuyerLogin = () => {
         .then((resp) => resp.json())
         .then((data) => {
           if (data.access_token) {
-            setSuccessMessage("Login successful");
-            setFormData({
-              email: "",
-              password: "",
+            setTokens({
+              access_token: data.access_token,
+              refresh_token: data.refresh_token,
             });
-            setTimeout(() => {
-              navigate("/");
-            }, 2500);
+
+            return fetch("http://127.0.0.1:5000/api/v1/auth/getme", {
+              headers: {
+                Authorization: `Bearer ${data.access_token}`,
+              },
+            })
+              .then((resp) => resp.json())
+              .then((userData) => {
+                setUser(userData);
+                setSuccessMessage("Login successful");
+                setFormData({
+                  email: "",
+                  password: "",
+                });
+                setTimeout(() => {
+                  navigate("/");
+                }, 2500);
+              });
           } else {
             setSuccessMessage(data.message);
           }

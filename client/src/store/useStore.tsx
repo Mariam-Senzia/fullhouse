@@ -2,6 +2,8 @@ import { create } from "zustand";
 import type { Event } from "../components/global/types/EventType";
 import type { Cart } from "../components/global/types/CartType";
 import { persist } from "zustand/middleware";
+import type { User } from "../components/global/types/UserType";
+import type { AuthTokens } from "../components/global/types/TokensType";
 
 interface EventStore {
   events: Event[];
@@ -13,6 +15,11 @@ interface EventStore {
   setIsCartOpen: (open: boolean) => void;
   updateQuantity: (eventId: number, quantity: number) => void;
   removeFromCart: (eventId: number) => void;
+
+  user: User | null;
+  tokens: AuthTokens | null;
+  setUser: (user: User | null) => void;
+  setTokens: (tokens: AuthTokens | null) => void;
 }
 
 const useStore = create<EventStore>()(
@@ -60,12 +67,19 @@ const useStore = create<EventStore>()(
         set((state) => ({
           cartItems: state.cartItems.filter((c) => c.eventId !== eventId),
         })),
+
+      user: null,
+      tokens: null,
+      setUser: (user) => set({ user }),
+      setTokens: (tokens) => set({ tokens }),
     }),
     {
       name: "cart-storage",
       partialize: (state) => ({
         cartItems: state.cartItems,
         events: state.events,
+        user: state.user,
+        tokens: state.tokens,
       }),
     }
   )

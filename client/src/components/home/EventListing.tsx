@@ -25,6 +25,8 @@ const EventListing = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  console.log(events);
+
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/v1/categories")
       .then((resp) => resp.json())

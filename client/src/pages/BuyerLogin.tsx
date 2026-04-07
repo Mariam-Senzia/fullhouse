@@ -18,12 +18,7 @@ const BuyerLogin = () => {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState<any>({});
-  const { setUser, setTokens, user, tokens } = useStore();
-
-  console.log({
-    access_tokens: tokens,
-    user: user,
-  });
+  const { setUser, setTokens } = useStore();
 
   const displayEvents = events.length ? events : hookEvents;
 

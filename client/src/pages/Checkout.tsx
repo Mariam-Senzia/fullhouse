@@ -8,14 +8,16 @@ import {
 import PhoneInput from "react-phone-number-input";
 import Navbar from "../components/home/Navbar";
 import { useState } from "react";
+import useStore from "../store/useStore";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useStore();
   const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    phone_number: undefined as string | undefined,
+    full_name: user?.name || "",
+    email: user?.email || "",
+    phone_number: user?.phone_number || (undefined as string | undefined),
   });
   const [errors, setErrors] = useState<any>({});
   const [isSubmitting, setIsSubmitting] = useState(false);

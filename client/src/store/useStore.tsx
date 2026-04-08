@@ -22,6 +22,8 @@ interface EventStore {
   setTokens: (tokens: AuthTokens | null) => void;
 }
 
+// localStorage.removeItem("cart-storage");
+
 const useStore = create<EventStore>()(
   persist(
     (set) => ({
@@ -77,7 +79,6 @@ const useStore = create<EventStore>()(
       name: "cart-storage",
       partialize: (state) => ({
         cartItems: state.cartItems,
-        events: state.events,
         user: state.user,
         tokens: state.tokens,
       }),

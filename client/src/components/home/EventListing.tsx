@@ -15,11 +15,16 @@ const EventListing = () => {
   const [selectedSort, setSelectedSort] = useState("upcoming");
   const [applied, setApplied] = useState({ category: "all", sort: "upcoming" });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/v1/publicEvents")
+    fetch("http://127.0.0.1:5000/api/v1/publicEvents?page=1&limit=8")
       .then((resp) => resp.json())
       .then((data) => {
-        setEvents(data);
+        setEvents(data.events);
+        setHasNext(data.has_next);
         setIsLoading(false);
       })
       .catch((err) => console.log(err));
@@ -108,6 +113,20 @@ const EventListing = () => {
 
     return result;
   }, [events, applied]);
+
+  const handleLoadMore = () => {
+    const nextPage = currentPage + 1;
+    setIsFetchingMore(true);
+    fetch(`http://127.0.0.1:5000/api/v1/publicEvents?page=${nextPage}&limit=8`)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setEvents([...events, ...data.events]);
+        setHasNext(data.has_next);
+        setCurrentPage(nextPage);
+        setIsFetchingMore(false);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <>
@@ -250,17 +269,21 @@ const EventListing = () => {
             )}
           </div>
 
-          <div className="flex justify-center my-12">
-            <div className="relative inline-block">
-              <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
+          {hasNext && (
+            <div className="flex justify-center my-12">
+              <div className="relative inline-block">
+                <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none" />
 
-              <a href="#">
-                <button className="relative uppercase border border-[#cc4324] text-gray-600 bg-white px-16 py-3 rounded-sm font-semibold transition-all duration-300 hover:-translate-x-0.5 hover:translate-y-0.5 hover:text-[#cc4324] hover:border-red-600">
-                  Load more events
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isFetchingMore}
+                  className="relative uppercase border border-[#cc4324] text-gray-600 bg-white px-16 py-3 rounded-sm font-semibold transition-all duration-300 hover:-translate-x-0.5 hover:translate-y-0.5 hover:text-[#cc4324] hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isFetchingMore ? "Loading..." : "Load more events"}
                 </button>
-              </a>
+              </div>
             </div>
-          </div>
+          )}
         </Container>
       </div>
     </>

@@ -7,7 +7,7 @@ const Search = () => {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const results = events.filter(
+  const results = (events || []).filter(
     (event) =>
       event.title.toLowerCase().includes(query.toLowerCase()) ||
       event.location.toLowerCase().includes(query.toLowerCase()) ||

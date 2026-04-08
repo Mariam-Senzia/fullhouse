@@ -297,10 +297,15 @@ api.add_resource(CategoryResource, "/api/v1/categories", "/api/v1/categories/<in
 class PublicEventsResource(Resource):
     def get(self):
         try:
-            events = Event.query.all()
+            page = request.args.get("page", 1, type=int)
+            limit = request.args.get("limit", 8, type=int)
+
+            paginated = Event.query.paginate(page=page, per_page=limit, error_out=False)
+
+            # events = Event.query.all()
             response = []
 
-            for e in events:
+            for e in paginated.items:
                 category = Category.query.get(e.category_id) if e.category_id else None
 
                 response.append(
@@ -323,7 +328,18 @@ class PublicEventsResource(Resource):
                     }
                 )
 
-            return make_response(jsonify(response), 200)
+            return make_response(
+                jsonify(
+                    {
+                        "events": response,
+                        "total": paginated.total,
+                        "pages": paginated.pages,
+                        "current_page": paginated.page,
+                        "has_next": paginated.has_next,
+                    }
+                ),
+                200,
+            )
 
         except Exception as e:
             print(e)

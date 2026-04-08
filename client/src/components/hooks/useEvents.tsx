@@ -5,7 +5,7 @@ const useEvents = () => {
       title: "Brunch Sing Along",
       image_url: "/slide-1.jpg",
       location: "Carnivore Grounds",
-      date: "Feb 14",
+      event_date: "Feb 14",
       day: "Sat",
       price: "KES 3,000",
       category: "Music",
@@ -13,12 +13,6 @@ const useEvents = () => {
       time: "12:00 PM - 1:00 AM",
       description:
         "Celebrate love and music at Brunch Sing Along. Enjoy live performances, curated brunch experiences, and an unforgettable Valentines vibe.",
-      ticket: {
-        type: "General Admission",
-        price: 3000,
-        validFrom: "Sat, Feb 14, 2026",
-        startTime: "12:00 PM",
-      },
     },
     {
       id: 2,
@@ -34,12 +28,6 @@ const useEvents = () => {
       time: "3:00 PM - 12:00 AM",
       description:
         "A high-energy outdoor festival featuring top DJs and live performers. Experience music, culture, and vibrant nightlife at its best.",
-      ticket: {
-        type: "General Admission",
-        price: 2500,
-        validFrom: "Sat, Apr 4, 2026",
-        startTime: "3:00 PM",
-      },
     },
     {
       id: 3,
@@ -55,12 +43,6 @@ const useEvents = () => {
       time: "12:00 PM - 1:00 AM",
       description:
         "An immersive cultural music festival celebrating heritage, live bands, and authentic African sounds in a beautiful outdoor setting.",
-      ticket: {
-        type: "General Admission",
-        price: 2000,
-        validFrom: "Sat, Aug 1, 2026",
-        startTime: "12:00 PM",
-      },
     },
     {
       id: 4,
@@ -77,12 +59,6 @@ const useEvents = () => {
       time: "07:00 PM - 11:00 PM",
       description:
         "An intimate live jazz experience featuring local and international artists. Enjoy smooth sounds, great ambiance, and curated performances.",
-      ticket: {
-        type: "General Admission",
-        price: 1500,
-        validFrom: "Fri, Jan 10, 2026",
-        startTime: "07:00 PM",
-      },
     },
     {
       id: 5,
@@ -99,12 +75,6 @@ const useEvents = () => {
       time: "06:00 PM - 09:00 PM",
       description:
         "A guided sound healing experience combining music, meditation, and mindfulness to restore balance and clarity.",
-      ticket: {
-        type: "RSVP",
-        price: 2500,
-        validFrom: "Sat, Feb 01, 2026",
-        startTime: "06:00 PM",
-      },
     },
 
     {
@@ -122,12 +92,6 @@ const useEvents = () => {
       time: "05:30 PM - 09:00 PM",
       description:
         "An evening for founders and innovators to pitch ideas, connect with investors, and network with the startup community.",
-      ticket: {
-        type: "General",
-        price: 500,
-        validFrom: "Wed, Jan 15, 2026",
-        startTime: "05:30 PM",
-      },
     },
 
     {
@@ -145,12 +109,6 @@ const useEvents = () => {
       time: "08:00 PM - 11:00 PM",
       description:
         "Enjoy classic and modern films in an open-air rooftop setting with breathtaking coastal views.",
-      ticket: {
-        type: "Cinema Pass",
-        price: 1000,
-        validFrom: "Wed, Dec 17, 2025",
-        startTime: "08:00 PM",
-      },
     },
 
     {
@@ -168,12 +126,6 @@ const useEvents = () => {
       time: "All Day",
       description:
         "A peaceful weekend retreat focused on mindfulness, meditation, and relaxation in a serene natural setting.",
-      ticket: {
-        type: "Retreat Pass",
-        price: 8500,
-        validFrom: "Sat, Jan 03, 2026",
-        startTime: "08:00 AM",
-      },
     },
 
     {
@@ -191,12 +143,81 @@ const useEvents = () => {
       time: "10:00 AM - 02:00 PM",
       description:
         "A free educational workshop covering how to design, organize, and manage modern libraries for communities and institutions.",
-      ticket: {
-        type: "Free Entry",
-        price: 0,
-        validFrom: "Mon, Dec 01, 2025",
-        startTime: "10:00 AM",
-      },
+    },
+    {
+      id: 10,
+      title: "Canvas & Creativity",
+      image_url: "/hero-3.png",
+      location: "The Alchemist",
+      date: "Sep 5",
+      day: "Sat",
+      price: "KES 1,500",
+      category: "Art",
+
+      dateRange: "Sat, Sep 5, 2026",
+      time: "2:00 PM - 8:00 PM",
+      description:
+        "A vibrant art showcase featuring emerging and established creatives, live installations, and interactive exhibits in an inspiring open space.",
+    },
+    {
+      id: 11,
+      title: "Sip & Savor",
+      image_url: "/hero-1.png",
+      location: "K1 Klub House",
+      date: "Sep 19",
+      day: "Sat",
+      price: "KES 3,000",
+      category: "Food & Drink",
+
+      dateRange: "Sat, Sep 19, 2026",
+      time: "4:00 PM - 11:00 PM",
+      description:
+        "An indulgent evening of fine wine, curated food pairings, and great music, bringing together flavors and experiences in a relaxed social setting.",
+    },
+    {
+      id: 12,
+      title: "Connect & Create",
+      image_url: "/hero-2.png",
+      location: "iHub Nairobi",
+      date: "Oct 3",
+      day: "Sat",
+      price: "KES 1,000",
+      category: "Networking",
+
+      dateRange: "Sat, Oct 3, 2026",
+      time: "10:00 AM - 5:00 PM",
+      description:
+        "A dynamic networking experience bringing together creatives, founders, and professionals to share ideas, collaborate, and build meaningful connections.",
+    },
+    {
+      id: 13,
+      title: "Sip & Paint",
+      image_url: "/hero-4.png",
+      location: "Artcaffe",
+      date: "Oct 17",
+      day: "Sat",
+      price: "KES 2,500",
+      category: "Experience",
+
+      dateRange: "Sat, Oct 17, 2026",
+      time: "3:00 PM - 9:00 PM",
+      description:
+        "A fun and relaxed creative session where painting meets good wine, music, and great company—perfect for unwinding and expressing your artistic side.",
+    },
+    {
+      id: 14,
+      title: "F1 Watch Party",
+      image_url: "/f1_watch_party.jpeg",
+      location: "Radisson Blu",
+      date: "Nov 15",
+      day: "Sun",
+      price: "KES 1,500",
+      category: "Sports",
+
+      dateRange: "Sun, Nov 15, 2026",
+      time: "4:00 PM - 10:00 PM",
+      description:
+        "Catch all the high-speed action at this F1 watch party with big screens, great food, and an electric crowd. Experience every lap, overtake, and finish surrounded by fellow motorsport fans.",
     },
   ];
 

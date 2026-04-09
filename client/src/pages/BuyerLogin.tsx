@@ -223,14 +223,14 @@ const BuyerLogin = () => {
                               )}
                             </div>
 
-                            <div className="">
+                            {/* <div className="">
                               <a
                                 href="#"
                                 className="text-sm text-gray-600 hover:text-[#cc4324] hover:underline"
                               >
                                 Forgot your password?
                               </a>
-                            </div>
+                            </div> */}
                           </div>
 
                           <div className="relative inline-block w-full">
@@ -242,7 +242,7 @@ const BuyerLogin = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center pb-6">
+                        {/* <div className="flex items-center pb-6">
                           <div className="grow border-t border-gray-300" />
                           <span className="px-3 text-sm text-gray-500">OR</span>
                           <div className="grow border-t border-gray-300" />
@@ -276,7 +276,7 @@ const BuyerLogin = () => {
                           <span className="text-sm font-medium text-gray-700">
                             Sign in with Google
                           </span>
-                        </button>
+                        </button> */}
                       </form>
 
                       {/* <div className="mt-6">

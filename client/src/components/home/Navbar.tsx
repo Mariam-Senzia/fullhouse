@@ -89,8 +89,8 @@ const Navbar = () => {
                           Buyer Login
                         </a>
                       </div>
-                      <div className="group flex items-center gap-2">
-                        <FaStore className="text-md group-hover:text-[#cc4324] transition-transform duration-300" />
+                      <div className="group relative flex items-center gap-2 cursor-not-allowed ">
+                        {/* <FaStore className="text-md group-hover:text-[#cc4324] transition-transform duration-300" />
                         <a
                           href="/merchantLogin"
                           onClick={() => setIsMenuOpen(false)}
@@ -98,7 +98,15 @@ const Navbar = () => {
                           className="block transition-transform group-hover:text-[#cc4324] duration-300"
                         >
                           Merchant Login
-                        </a>
+                        </a> */}
+                        <FaStore className="text-md" />
+                        <span className="block text-gray-500">
+                          Merchant Login
+                        </span>
+
+                        <div className="absolute -top-8 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          Coming soon
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -165,15 +173,21 @@ const Navbar = () => {
                       Buyer Login
                     </a>
                   </div>
-                  <div className="group flex items-center gap-2">
-                    <FaStore className="text-md group-hover:text-[#cc4324] transition-transform duration-300" />
+                  <div className="group relative flex items-center gap-2">
+                    {/* <FaStore className="text-md group-hover:text-[#cc4324] transition-transform duration-300" />
                     <a
                       href="/merchantLogin"
                       target="_blank"
                       className="block transition-transform group-hover:text-[#cc4324] duration-300"
                     >
                       Merchant Login
-                    </a>
+                    </a> */}
+                    <FaStore className="text-md" />
+                    <span className="block text-gray-500">Merchant Login</span>
+
+                    <div className="absolute -top-8 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      Coming soon
+                    </div>
                   </div>
                 </div>
               </div>

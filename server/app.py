@@ -300,7 +300,9 @@ class PublicEventsResource(Resource):
             page = request.args.get("page", 1, type=int)
             limit = request.args.get("limit", 8, type=int)
 
-            paginated = Event.query.paginate(page=page, per_page=limit, error_out=False)
+            paginated = Event.query.order_by(Event.event_date.asc()).paginate(
+                page=page, per_page=limit, error_out=False
+            )
 
             # events = Event.query.all()
             response = []

@@ -33,14 +33,14 @@ const Footer = () => {
                   Find Events
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a
                   href="/createEvents"
                   className="text-gray-400 hover:text-[#cc4324] transition-colors duration-200"
                 >
                   Create Events
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
 

@@ -7,7 +7,7 @@ import EventCardSkeleton from "../skeletons/EventCardSkeleton";
 import type { Category } from "../global/types/CategoryType";
 
 const EventListing = () => {
-  const { events, setEvents } = useStore();
+  const { events, setEvents, hasNext, setHasNext } = useStore();
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -16,19 +16,13 @@ const EventListing = () => {
   const [applied, setApplied] = useState({ category: "all", sort: "upcoming" });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasNext, setHasNext] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/v1/publicEvents?page=1&limit=8")
-      .then((resp) => resp.json())
-      .then((data) => {
-        setEvents(data.events);
-        setHasNext(data.has_next);
-        setIsLoading(false);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    if (events.length > 0) {
+      setIsLoading(false);
+    }
+  }, [events]);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/v1/categories")

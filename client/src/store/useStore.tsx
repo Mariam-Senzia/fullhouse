@@ -20,6 +20,9 @@ interface EventStore {
   tokens: AuthTokens | null;
   setUser: (user: User | null) => void;
   setTokens: (tokens: AuthTokens | null) => void;
+
+  hasNext: boolean;
+  setHasNext: (hasNext: boolean) => void;
 }
 
 // localStorage.removeItem("cart-storage");
@@ -74,6 +77,9 @@ const useStore = create<EventStore>()(
       tokens: null,
       setUser: (user) => set({ user }),
       setTokens: (tokens) => set({ tokens }),
+
+      hasNext: false,
+      setHasNext: (hasNext: boolean) => set({ hasNext }),
     }),
     {
       name: "cart-storage",

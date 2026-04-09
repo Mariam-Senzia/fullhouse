@@ -9,8 +9,22 @@ import BuyerSignUp from "./pages/BuyerSignUp";
 import MerchantSignUp from "./pages/MerchantSignUp";
 import Checkout from "./pages/Checkout";
 import CheckIn from "./pages/CheckIn";
+import useStore from "./store/useStore";
+import { useEffect } from "react";
 
 function App() {
+  const { setEvents, setHasNext } = useStore();
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/v1/publicEvents?page=1&limit=8")
+      .then((resp) => resp.json())
+      .then((data) => {
+        setEvents(data.events);
+        setHasNext(data.has_next);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <>
       <BrowserRouter>

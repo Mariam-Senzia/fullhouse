@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const BuyerSignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [, setCurrentSlide] = useState(0);
   const hookEvents = useEvents();
   const { events } = useStore();
   const [formData, setFormData] = useState({

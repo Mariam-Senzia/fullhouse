@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
 import {
   FaArrowLeft,
   FaUser,
@@ -11,7 +11,6 @@ import { useState } from "react";
 import useStore from "../store/useStore";
 
 const Checkout = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const { user } = useStore();
   const [formData, setFormData] = useState({

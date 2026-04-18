@@ -8,7 +8,7 @@ import useEvents from "../components/hooks/useEvents";
 const MerchantLogin = () => {
   const events = useEvents();
   const [showPassword, setShowPassword] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [, setCurrentSlide] = useState(0);
 
   return (
     <div className="min-h-screen relative">
@@ -26,7 +26,7 @@ const MerchantLogin = () => {
           <SwiperSlide key={index}>
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${event.image}')` }}
+              style={{ backgroundImage: `url('${event.image_url}')` }}
             >
               <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-black/40"></div>
             </div>

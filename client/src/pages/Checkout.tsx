@@ -75,7 +75,8 @@ const Checkout = () => {
       })
         .then((resp) => resp.json())
         .then((data) => {
-          if (data.message === "Event booked successfully") {
+          console.log(data);
+          if (data.redirect_url) {
             window.location.href = data.redirect_url;
           } else {
             alert(data.message);

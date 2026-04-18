@@ -1,6 +1,7 @@
 from models.init import db
 from models.category import Category
 from app import app
+from sqlalchemy import text
 
 categories = [
     {"name": "Music & Concerts", "description": "Live music and concert events"},
@@ -19,7 +20,14 @@ categories = [
 ]
 
 with app.app_context():
-    Category.query.delete()
+    db.session.execute(
+        text(
+            """
+            TRUNCATE TABLE triggers, payments, bookings, events, categories
+            RESTART IDENTITY
+        """
+        )
+    )
     db.session.commit()
     print("Categories cleared!")
 

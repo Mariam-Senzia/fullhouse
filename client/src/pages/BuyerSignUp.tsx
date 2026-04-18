@@ -71,7 +71,7 @@ const BuyerSignUp = () => {
     e.preventDefault();
 
     if (validationForm()) {
-      fetch("http://127.0.0.1:5000/api/v1/auth", {
+      fetch("https://fullhouse-ktih.onrender.com/api/v1/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

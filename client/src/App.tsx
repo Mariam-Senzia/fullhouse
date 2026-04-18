@@ -16,7 +16,9 @@ function App() {
   const { setEvents, setHasNext } = useStore();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/v1/publicEvents?page=1&limit=8")
+    fetch(
+      "https://fullhouse-ktih.onrender.com/api/v1/publicEvents?page=1&limit=8"
+    )
       .then((resp) => resp.json())
       .then((data) => {
         setEvents(data.events);

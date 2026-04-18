@@ -61,7 +61,7 @@ const Checkout = () => {
 
     if (validationForm()) {
       setIsSubmitting(true);
-      fetch("http://127.0.0.1:5000/api/v1/bookings", {
+      fetch("https://fullhouse-ktih.onrender.com/api/v1/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

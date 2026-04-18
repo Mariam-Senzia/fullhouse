@@ -19,7 +19,7 @@ const EventDetailsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/api/v1/eventdetail/${id}`)
+    fetch(`https://fullhouse-ktih.onrender.com/api/v1/eventdetail/${id}`)
       .then((resp) => resp.json())
       .then((data) => setEvent(data))
       .catch((err) => console.log(err));

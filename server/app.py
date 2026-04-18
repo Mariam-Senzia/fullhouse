@@ -1030,7 +1030,7 @@ def generate_qr_code(booking_id):
         box_size=10,
         border=4,
     )
-    qr.add_data(f"{os.getenv('FRONTEND_URL')}/checkin/{booking_id}")
+    qr.add_data(f"http://localhost:5173/checkin/{booking_id}")
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")

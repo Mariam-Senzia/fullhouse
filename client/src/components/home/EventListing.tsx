@@ -25,7 +25,7 @@ const EventListing = () => {
   }, [events]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/v1/categories")
+    fetch("https://fullhouse-ktih.onrender.com/api/v1/categories")
       .then((resp) => resp.json())
       .then((cat) => setCategories(cat))
       .catch((err) => console.log(err));
@@ -111,7 +111,9 @@ const EventListing = () => {
   const handleLoadMore = () => {
     const nextPage = currentPage + 1;
     setIsFetchingMore(true);
-    fetch(`http://127.0.0.1:5000/api/v1/publicEvents?page=${nextPage}&limit=8`)
+    fetch(
+      `https://fullhouse-ktih.onrender.com/api/v1/publicEvents?page=${nextPage}&limit=8`
+    )
       .then((resp) => resp.json())
       .then((data) => {
         setEvents([...events, ...data.events]);

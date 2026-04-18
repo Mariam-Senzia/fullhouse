@@ -52,7 +52,7 @@ const BuyerLogin = () => {
     e.preventDefault();
 
     if (validationForm()) {
-      fetch("http://127.0.0.1:5000/api/v1/auth/login", {
+      fetch("https://fullhouse-ktih.onrender.com/api/v1/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,11 +67,14 @@ const BuyerLogin = () => {
               refresh_token: data.refresh_token,
             });
 
-            return fetch("http://127.0.0.1:5000/api/v1/auth/getme", {
-              headers: {
-                Authorization: `Bearer ${data.access_token}`,
-              },
-            })
+            return fetch(
+              "https://fullhouse-ktih.onrender.com/api/v1/auth/getme",
+              {
+                headers: {
+                  Authorization: `Bearer ${data.access_token}`,
+                },
+              }
+            )
               .then((resp) => resp.json())
               .then((userData) => {
                 setUser(userData);

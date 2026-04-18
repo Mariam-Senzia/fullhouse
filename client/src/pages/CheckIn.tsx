@@ -27,7 +27,7 @@ const CheckIn = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/api/v1/booking/${id}`)
+    fetch(`https://fullhouse-ktih.onrender.com/api/v1/booking/${id}`)
       .then((resp) => resp.json())
       .then((data) => {
         if (data.message === "Booking not found") {

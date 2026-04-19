@@ -735,7 +735,7 @@ def register_ipn(token):
         response = requests.post(
             url,
             json={
-                "url": "https://b881-102-209-76-51.ngrok-free.app/api/v1/webhooks",
+                "url": "https://fullhouse-ktih.onrender.com/api/v1/webhooks",
                 "ipn_notification_type": "POST",
             },
             headers={
@@ -767,7 +767,7 @@ def submit_order(token, new_booking, ipn_id):
                 "currency": "KES",
                 "amount": float(new_booking.total_amount),
                 "description": event.title if event else "Event ticket booking",
-                "callback_url": "http://localhost:5173/?payment=success",
+                "callback_url": "https://fullhouse-beryl.vercel.app/?payment=success",
                 # "notification_id": ipn_id,
                 "notification_id": os.getenv("IPN_ID"),
                 "billing_address": {
@@ -1030,7 +1030,7 @@ def generate_qr_code(booking_id):
         box_size=10,
         border=4,
     )
-    qr.add_data(f"http://localhost:5173/checkin/{booking_id}")
+    qr.add_data(f"https://fullhouse-beryl.vercel.app/checkin/{booking_id}")
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")

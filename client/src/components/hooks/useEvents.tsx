@@ -5,12 +5,12 @@ const useEvents = () => {
       title: "Brunch Sing Along",
       image_url: "/slide-1.jpg",
       location: "Carnivore Grounds",
-      event_date: "Aug 1",
+      date: "Aug 1",
       day: "Sat",
       price: "KES 1,000",
       category: "Music",
       dateRange: "Sat, Feb 14, 2026",
-      time: "12:00 PM - 10:00 AM",
+      time: "12:00 PM - 10:00 PM",
       description:
         "Celebrate love and music at Brunch Sing Along. Enjoy live performances, curated brunch experiences, and an unforgettable Valentines vibe.",
     },
@@ -65,14 +65,14 @@ const useEvents = () => {
       title: "Kunye",
       image_url:
         "https://egotickets-core-cdn.s3.eu-north-1.amazonaws.com/production/uploads/event/banner_photo/51436/mobile_33a7939eb00df892.jpg",
-      location: "Nairobi",
+      location: "Nairobi Railways",
       date: "Feb 01",
       day: "Sat",
       price: "KES 2,500",
       category: "Wellness",
 
       dateRange: "Sat, Feb 01, 2026",
-      time: "06:00 PM - 09:00 PM",
+      time: "2:00 PM - 1:00 AM",
       description:
         "A guided sound healing experience combining music, meditation, and mindfulness to restore balance and clarity.",
     },
@@ -89,7 +89,7 @@ const useEvents = () => {
       category: "Business",
 
       dateRange: "Wed, Jan 15, 2026",
-      time: "05:30 PM - 09:00 PM",
+      time: "10:00 AM - 04:00 PM",
       description:
         "An evening for founders and innovators to pitch ideas, connect with investors, and network with the startup community.",
     },
@@ -148,7 +148,7 @@ const useEvents = () => {
       id: 10,
       title: "Canvas & Creativity",
       image_url: "/hero-3.png",
-      location: "The Alchemist",
+      location: "Nairobi Street Kitchen",
       date: "Sep 5",
       day: "Sat",
       price: "KES 1,500",

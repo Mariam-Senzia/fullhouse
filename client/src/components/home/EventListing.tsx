@@ -254,7 +254,7 @@ const EventListing = () => {
                             From
                           </span>
                           <p className="text-lg font-bold text-gray-900">
-                            {event.price}
+                            KES {event.price}
                           </p>
                         </div>
                       </div>

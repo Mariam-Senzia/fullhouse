@@ -815,6 +815,11 @@ class WebhookResource(Resource):
             token = get_access_token()
             if token:
                 transaction = get_transaction_status(order_tracking_id, token)
+                print("status_code:", transaction.get("status_code"))
+                print(
+                    "payment_status_description:",
+                    transaction.get("payment_status_description"),
+                )
 
                 booking_id = merchant_reference.split("_")[0]
                 booking = Booking.query.filter_by(id=int(booking_id)).first()
@@ -844,13 +849,19 @@ class WebhookResource(Resource):
                     )
                     db.session.add(payment)
 
-                    if transaction.get("status_code") == 1:
+                    if (
+                        transaction.get("status_code") == 1
+                        and transaction.get("payment_status_description") == "Completed"
+                        and booking.status != "confirmed"
+                    ):
                         booking.status = "confirmed"
+                        db.session.commit()
 
-                    db.session.commit()
+                        event = Event.query.filter_by(id=booking.event_id).first()
+                        send_booking_confirmation_email(booking, event)
 
-                    event = Event.query.filter_by(id=booking.event_id).first()
-                    send_booking_confirmation_email(booking, event)
+                    else:
+                        db.session.commit()
 
             return make_response(
                 jsonify(

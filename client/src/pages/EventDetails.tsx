@@ -113,9 +113,7 @@ const EventDetailsPage = () => {
               <div className="space-y-3 text-gray-700">
                 <div className="flex items-center gap-3">
                   <FaMapMarkerAlt className="text-gray-400 shrink-0" />
-                  <span className="text-blue-600 hover:underline cursor-pointer">
-                    {event.location}
-                  </span>
+                  <span>{event.location}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FaCalendarAlt className="text-gray-400 shrink-0" />

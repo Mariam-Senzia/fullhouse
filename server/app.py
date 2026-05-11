@@ -622,6 +622,26 @@ class BookingResource(Resource):
             db.session.add(new_booking)
             db.session.commit()
 
+            # free event
+            if new_booking.total_amount == 0:
+                new_booking.status = "Confirmed"
+                db.session.commit()
+
+                send_booking_confirmation_email(new_booking, existing_event)
+
+                return make_response(
+                    jsonify(
+                        {
+                            "message": "Booking confirmed",
+                            "booking": {
+                                "booking_id": new_booking.id,
+                                "status": new_booking.status,
+                            },
+                        }
+                    ),
+                    201,
+                )
+
             token = get_access_token()
             if not token:
                 return make_response(jsonify({"message": "Error getting token"}), 500)
@@ -973,7 +993,7 @@ def send_booking_confirmation_email(booking, event):
                                         </td>
                                         <td width="50%">
                                         <p style="margin:0 0 4px; color:#999; font-size:10px; letter-spacing:1px; text-transform:uppercase;">Amount Paid</p>
-                                        <p style="margin:0; color:#cc4324; font-size:13px; font-weight:700;">KES {booking.total_amount}</p>
+                                        <p style="margin:0; color:#cc4324; font-size:13px; font-weight:700;">{"Free" if booking.total_amount == 0 else f"KES {booking.total_amount}"}</p>
                                         </td>
                                     </tr>
                                     </table>
@@ -1107,7 +1127,7 @@ def generate_pdf_ticket(booking, event, qr_base64):
                 </div>
                 <div>
                     <p class="label">Amount Paid</p>
-                    <p class="value amount">KES {booking.total_amount}</p>
+                    <p class="value amount">{"Free" if booking.total_amount == 0 else f"KES {booking.total_amount}"}</p>
                 </div>
             </div>
             <div class="holder">

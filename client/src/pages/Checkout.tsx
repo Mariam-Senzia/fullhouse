@@ -1,4 +1,4 @@
-import { Link, useLocation} from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FaArrowLeft,
   FaUser,
@@ -22,6 +22,7 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { subtotal, id } = location.state;
+  const isFree = subtotal === 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -112,7 +113,7 @@ const Checkout = () => {
                 Order Total
               </p>
               <p className="text-2xl font-bold text-gray-900 mt-0.5">
-                KES {subtotal.toLocaleString()}
+                {subtotal === 0 ? "Free" : `KES ${subtotal.toLocaleString()}`}
               </p>
             </div>
             <Link
@@ -187,43 +188,45 @@ const Checkout = () => {
               )}
             </div>
 
-            <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 mb-5 space-y-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-gray-900 text-base tracking-tight">
-                    Payment
-                  </h3>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    Secured by PesaPal
+            {!isFree && (
+              <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 mb-5 space-y-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-base tracking-tight">
+                      Payment
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Secured by PesaPal
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {["M-PESA", "Visa", "Mastercard", "Airtel Money"].map(
+                    (method) => (
+                      <span
+                        key={method}
+                        className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1.5 rounded-sm border border-gray-200"
+                      >
+                        {method}
+                      </span>
+                    )
+                  )}
+                </div>
+
+                <div className="bg-blue-50 border border-blue-100 rounded-sm p-4">
+                  <p className="font-semibold text-sm text-blue-700 mb-1">
+                    How it works
+                  </p>
+                  <p className="text-xs text-blue-600 leading-relaxed">
+                    After clicking <strong>Complete Payment</strong>, you'll be
+                    redirected to PesaPal's secure page where you can pay via
+                    M-PESA, credit/debit card, or mobile money. Your ticket will
+                    be emailed once payment is confirmed.
                   </p>
                 </div>
               </div>
-
-              <div className="flex flex-wrap gap-2">
-                {["M-PESA", "Visa", "Mastercard", "Airtel Money"].map(
-                  (method) => (
-                    <span
-                      key={method}
-                      className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1.5 rounded-sm border border-gray-200"
-                    >
-                      {method}
-                    </span>
-                  )
-                )}
-              </div>
-
-              <div className="bg-blue-50 border border-blue-100 rounded-sm p-4">
-                <p className="font-semibold text-sm text-blue-700 mb-1">
-                  How it works
-                </p>
-                <p className="text-xs text-blue-600 leading-relaxed">
-                  After clicking <strong>Complete Payment</strong>, you'll be
-                  redirected to PesaPal's secure page where you can pay via
-                  M-PESA, credit/debit card, or mobile money. Your ticket will
-                  be emailed once payment is confirmed.
-                </p>
-              </div>
-            </div>
+            )}
 
             <div className="relative inline-block w-full">
               <div className="absolute -left-1 -bottom-1 w-full h-full border border-[#cc4324] bg-gray-100 rounded-sm pointer-events-none " />
@@ -232,7 +235,11 @@ const Checkout = () => {
                 disabled={isSubmitting}
                 className="relative w-full h-full uppercase  text-white  bg-[#cc4324] px-16 py-3 rounded-sm font-semibold shadow-lg transition-transform duration-300 hover:translate-y-0.5 hover:-translate-x-0.5 disabled:opacity-80 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Processing..." : "Complete Payment"}
+                {isSubmitting
+                  ? "Processing..."
+                  : isFree
+                  ? "Get Free Ticket"
+                  : "Complete Payment"}
               </button>
             </div>
           </form>

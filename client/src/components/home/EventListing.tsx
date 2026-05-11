@@ -249,14 +249,25 @@ const EventListing = () => {
                       </div>
 
                       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <div>
-                          <span className="text-xs text-gray-500 uppercase">
-                            From
-                          </span>
-                          <p className="text-lg font-bold text-gray-900">
-                            KES {event.price}
-                          </p>
-                        </div>
+                        {event.price === "0" ? (
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase invisible">
+                              From
+                            </span>
+                            <p className="bg-green-100 text-green-700 text-sm font-bold px-5 py-0.5 rounded-sm">
+                              Free
+                            </p>
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase">
+                              From
+                            </span>
+                            <p className="text-lg font-bold text-gray-900">
+                              KES {event.price}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

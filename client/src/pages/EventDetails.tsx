@@ -142,9 +142,15 @@ const EventDetailsPage = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h4 className=" text-gray-900">RSVP</h4>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">
-                        KES. {numericPrice.toLocaleString()}
-                      </p>
+                      {event.price === "0" ? (
+                        <p className="bg-green-100 text-green-700 text-sm font-bold px-5 py-0.5 rounded-sm mt-2">
+                          Free
+                        </p>
+                      ) : (
+                        <p className="text-2xl font-bold text-gray-900 mt-1">
+                          KES. {numericPrice.toLocaleString()}
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex items-center sm:gap-3 border border-gray-300 rounded-sm">
@@ -182,9 +188,11 @@ const EventDetailsPage = () => {
 
                 <div className="flex justify-between items-center py-4 border-b border-gray-200 mt-10">
                   <span className="font-semibold text-gray-700">SUBTOTAL</span>
-                  <span className="font-bold text-xl text-gray-900">
-                    KES {subtotal.toLocaleString()}
-                  </span>
+                  <p className="text-xl font-bold text-gray-900 ">
+                    {subtotal === 0
+                      ? "KES 0"
+                      : `KES ${subtotal.toLocaleString()}`}
+                  </p>
                 </div>
 
                 <div className="grid  sm:grid-cols-2 gap-4 mt-12">

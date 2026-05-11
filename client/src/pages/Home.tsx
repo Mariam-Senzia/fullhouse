@@ -8,10 +8,20 @@ import { useEffect, useState } from "react";
 const Home = () => {
   const location = useLocation();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("payment") === "success") {
+      setSuccessMessage(
+        "Payment successful! Your ticket will be emailed to you shortly."
+      );
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 4000);
+    } else if (params.get("booking") === "success") {
+      setSuccessMessage(
+        "Booking confirmed! Your ticket will be emailed to you shortly."
+      );
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 4000);
     }
@@ -21,8 +31,8 @@ const Home = () => {
     <>
       <Navbar />
       {showSuccess && (
-        <div className="fixed top-4 left-4 bg-green-500 text-white px-6 py-3 rounded-sm shadow-lg z-50">
-          Payment successful! Your ticket will be emailed to you shortly.
+        <div className="fixed top-16 left-4 bg-green-500 text-white px-6 py-3 rounded-sm shadow-lg z-50">
+          {successMessage}
         </div>
       )}
       <Hero />

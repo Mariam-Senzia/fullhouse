@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
   FaUser,
@@ -23,6 +23,8 @@ const Checkout = () => {
 
   const { subtotal, id } = location.state;
   const isFree = subtotal === 0;
+
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -62,6 +64,7 @@ const Checkout = () => {
     if (validationForm()) {
       setIsSubmitting(true);
       fetch("https://fullhouse-ktih.onrender.com/api/v1/bookings", {
+        // fetch("http://127.0.0.1:5000/api/v1/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,11 +82,14 @@ const Checkout = () => {
           if (data.redirect_url) {
             window.location.href = data.redirect_url;
           } else {
+            // setIsSubmitting(false);
+            navigate("/?booking=success");
             alert(data.message);
           }
         })
         .catch((err) => {
           console.log(err);
+          setIsSubmitting(false);
           alert("Something went wrong, please try again.");
         });
     }

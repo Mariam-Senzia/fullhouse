@@ -122,8 +122,7 @@ const useEvents = () => {
     {
       id: 9,
       title: "Jazz Night Live",
-      image_url:
-        "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/jazz-night-flyer-template-design-de270da6f93bb0d4cab657f9572a765f_screen.jpg?ts=1636991643",
+      image_url: "/jazz-night.jpg",
       location: "Alliance Française",
       date: "Sept 18",
       day: "Fri",
@@ -138,8 +137,7 @@ const useEvents = () => {
     {
       id: 10,
       title: "Kunye",
-      image_url:
-        "https://egotickets-core-cdn.s3.eu-north-1.amazonaws.com/production/uploads/event/banner_photo/51436/mobile_33a7939eb00df892.jpg",
+      image_url: "/hero-9.png",
       location: "Nairobi Railways",
       date: "Sept 20",
       day: "Sat",
@@ -154,8 +152,7 @@ const useEvents = () => {
     {
       id: 11,
       title: "Startup Pitch Night",
-      image_url:
-        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80",
+      image_url: "/pitch.jpeg",
       location: "iHub Nairobi",
       date: "Sep 25",
       day: "Wed",
